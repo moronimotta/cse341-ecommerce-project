@@ -1,6 +1,6 @@
 #!/bin/bash
 
-URL="https://cse341-ecommerce-project.onrender.com/healthcheck"
+URL="https://cse341-ecommerce-project.onrender.com/products/"
 
 response=$(curl --write-out "%{http_code}" --silent --output /dev/null "$URL")
 

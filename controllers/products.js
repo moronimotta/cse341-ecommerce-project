@@ -108,10 +108,26 @@ const deleteProd= async(req,res)=>{
       }
   };
 
+  const getLowStock = async (req, res, next) => {
+    try {
+      const result = await mongodb
+        .getDb()
+        .collection('products')
+        .find({ stock: { $lt: 20 } });
+      result.toArray().then((lists) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).json(lists);
+      });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  };
+
   module.exports = {
     getAllProd,
     getSingleProd,
     updateProd,
     createProd,
-    deleteProd
+    deleteProd,
+    getLowStock
   }
