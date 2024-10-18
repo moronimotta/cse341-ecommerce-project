@@ -1,0 +1,20 @@
+name: Stock Check
+
+on:
+  schedule:
+    - cron: '*/2 * * * *'  
+jobs:
+  stockcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install jq
+        run: sudo apt-get install -y jq  
+      - name: Set execute permissions
+        run: chmod +x ./check-stock.sh  
+
+      - name: Run stock check
+        run: ./check-stock.sh  

@@ -108,10 +108,33 @@ const deleteProd= async(req,res)=>{
       }
   };
 
+  const getLowStock = async (req, res, next) => {
+    try {
+      const db = mongodb.getDb();
+      console.log(db);  
+    
+      // TODO: get user by api key, then check if is manager or admin. If it is, then return all products with low stock and user_id
+      const result = await db.collection('products').find({ stock: { $lt: 20 } }).toArray();
+      console.log(result);  
+  
+      if (result.length > 0) {
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).json(result); 
+      } else {
+        res.status(404).json({ message: 'No products with low stock found' });
+      }
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  };
+  
+  
+
   module.exports = {
     getAllProd,
     getSingleProd,
     updateProd,
     createProd,
-    deleteProd
+    deleteProd,
+    getLowStock
   }

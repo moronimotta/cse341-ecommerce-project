@@ -1,0 +1,19 @@
+name: Health Check
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set execute permissions
+        run: chmod +x ./healthcheck.sh
+
+      - name: Run health check
+        run: ./healthcheck.sh

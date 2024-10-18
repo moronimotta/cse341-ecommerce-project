@@ -72,6 +72,9 @@
           "201": {
             "description": "Created"
           },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -105,49 +108,24 @@
         ],
         "parameters": [
           {
-        "name": "id",
-        "in": "path",
-        "required": true,
-        "type": "string"
-          },
-          {
-        "name": "body",
-        "in": "body",
-        "schema": {
-          "type": "object",
-          "properties": {
-            "name": {
-          "example": "John"
-            },
-            "last_name": {
-          "example": "Doe"
-            },
-            "email": {
-          "example": "johndoe@example.com"
-            },
-            "api_key": {
-          "example": "123456789abcdef"
-            },
-            "active": {
-          "example": true
-            },
-            "role": {
-          "example": "admin"
-            }
-          },
-          "required": ["name", "email", "role"]
-        }
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
           "204": {
-        "description": "No Content"
+            "description": "No Content"
           },
           "404": {
-        "description": "Not Found"
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
           },
           "500": {
-        "description": "Internal Server Error"
+            "description": "Internal Server Error"
           }
         }
       },
@@ -191,38 +169,12 @@
       },
       "post": {
         "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                },
-                "description": {
-                  "example": "any"
-                },
-                "updated_at": {
-                  "example": "any"
-                },
-                "brand": {
-                  "example": "any"
-                },
-                "category": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
           "201": {
             "description": "Created"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
           },
           "500": {
             "description": "Internal Server Error"
@@ -280,6 +232,111 @@
             "in": "path",
             "required": true,
             "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/orders/": {
+      "get": {
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "example": "any"
+                },
+                "amount": {
+                  "example": "any"
+                },
+                "status": {
+                  "example": "any"
+                },
+                "date": {
+                  "example": "any"
+                },
+                "cart_id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "description": "",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           },
           {
             "name": "body",
@@ -287,22 +344,19 @@
             "schema": {
               "type": "object",
               "properties": {
-                "id": {
+                "user_id": {
                   "example": "any"
                 },
-                "name": {
+                "amount": {
                   "example": "any"
                 },
-                "description": {
+                "status": {
                   "example": "any"
                 },
-                "updated_at": {
+                "date": {
                   "example": "any"
                 },
-                "brand": {
-                  "example": "any"
-                },
-                "category": {
+                "cart_id": {
                   "example": "any"
                 }
               }
@@ -312,6 +366,40 @@
         "responses": {
           "204": {
             "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"

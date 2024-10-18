@@ -12,6 +12,8 @@ router.delete('/:id', prodController.deleteProd);
 //UPDATE USER
 router.put('/:id', prodController.updateProd);
 
+router.get('/get/low-stock', prodController.getLowStock);
+
 module.exports = router;
 
  

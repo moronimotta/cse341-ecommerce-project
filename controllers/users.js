@@ -2,14 +2,12 @@ const mongodb = require('../data/database');
 const dotenv = require('dotenv');
 const createError = require('http-errors');
 const apiKeyGen = require('../tools/api-key-gen');
+const sendNotification = require('../tools/ntfy');
 
 dotenv.config();
 
 const userCollection = 'users';
 const ObjectId = require('mongodb').ObjectId;
-
-// Users: id, name, last_name, email, api_key, active, role
-
 
 const getUser = async (req, res, next) => {
   try {
@@ -64,11 +62,11 @@ const updateUser = async (req, res, next) => {
 };
 
 const createUser = async (req, res, next) => {
+//  TODO: add company name to user
   try {
     // swagger-tags=['Users']
     let db = mongodb.getDb();
     let user = req.body;
-    console.log(user);
 
     if (!user.role) {
       user.role = 'customer';
@@ -76,12 +74,16 @@ const createUser = async (req, res, next) => {
 
     user.api_key = apiKeyGen();
     user.active = true;
-    
-    await db.collection(userCollection).insertOne(user);
+    if (process.env.TEST_ERROR) {
+      throw new Error('Testing error');
+    }
 
+    await db.collection(userCollection).insertOne(user);
     res.setHeader('Content-Type', 'application/json');
     res.status(201).json(user);
   } catch (err) {
+    console.error('Error creating user:', err);
+    sendNotification(err, 'system_error');
     res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 };
@@ -100,6 +102,8 @@ const deleteUser = async (req, res, next) => {
     throw res.json(createError(500, err.message));
   }
 };
+
+// TODO: Get user by api key
 
 module.exports = {
     getUser,
