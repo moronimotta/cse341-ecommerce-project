@@ -17,9 +17,5 @@ $low_stock_items
 Date: $current_date"
 
     curl -d "$message" ntfy.sh/byu_ecommerce_logs
-else
-    message="Message: All products are sufficiently stocked
 
-Date: $current_date"
-    curl -d "$message" ntfy.sh/byu_ecommerce_logs
 fi
