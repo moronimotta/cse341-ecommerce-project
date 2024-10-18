@@ -62,6 +62,7 @@ const updateUser = async (req, res, next) => {
 };
 
 const createUser = async (req, res, next) => {
+//  TODO: add company name to user
   try {
     // swagger-tags=['Users']
     let db = mongodb.getDb();
