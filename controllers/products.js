@@ -113,6 +113,7 @@ const deleteProd= async(req,res)=>{
       const db = mongodb.getDb();
       console.log(db);  
     
+      // TODO: get user by api key, then check if is manager or admin. If it is, then return all products with low stock and user_id
       const result = await db.collection('products').find({ stock: { $lt: 20 } }).toArray();
       console.log(result);  
   

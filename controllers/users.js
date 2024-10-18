@@ -102,6 +102,8 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+// TODO: Get user by api key
+
 module.exports = {
     getUser,
     getUsers,
