@@ -1,0 +1,17 @@
+ name:
+  Check Production Web Service
+ 
+on:
+  schedule:
+    - cron: "*/1 * * * *"
+ 
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+ 
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run health check
+      run: ./healthcheck.sh
