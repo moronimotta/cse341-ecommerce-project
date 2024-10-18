@@ -1,0 +1,28 @@
+{
+  "name": "cse341-ecommerce",
+  "version": "1.0.0",
+  "description": "Final project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.10",
+    "express": "^4.17.1",
+    "express-session": "^1.18.0",
+    "express-validator": "^7.2.0",
+    "http-errors": "^2.0.0",
+    "mongoose": "^6.0.14",
+    "nodemon": "^2.0.22",
+    "passport": "^0.7.0",
+    "passport-github": "^1.1.0",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^10.0.0"
+  }
+}
