@@ -5,10 +5,10 @@
     "description": "Final Project",
     "version": "1.0.0"
   },
-  "host": "cse341-ecommerce-project.onrender.com",
+  "host": "localhost:8080",
   "basePath": "/",
   "schemes": [
-    "https"
+    "http"
   ],
   "paths": {
     "/": {
