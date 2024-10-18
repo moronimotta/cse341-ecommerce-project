@@ -30,9 +30,9 @@ app.use((err, req, res, next) => {
 mongodb.initDb((err) => {
   if (err) {
     console.error('Failed to connect to MongoDB:', err);
-  } else {
-    app.listen(port, () => {
-      console.log(`Server running on port ${port}`);
-    });
   }
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
 });
+
