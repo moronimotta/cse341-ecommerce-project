@@ -110,18 +110,24 @@ const deleteProd= async(req,res)=>{
 
   const getLowStock = async (req, res, next) => {
     try {
-      const result = await mongodb
-        .getDb()
-        .collection('products')
-        .find({ stock: { $lt: 20 } });
-      result.toArray().then((lists) => {
+      const db = mongodb.getDb();
+      console.log(db);  
+    
+      const result = await db.collection('products').find({ stock: { $lt: 20 } }).toArray();
+      console.log(result);  
+  
+      if (result.length > 0) {
         res.setHeader('Content-Type', 'application/json');
-        res.status(200).json(lists);
-      });
+        res.status(200).json(result); 
+      } else {
+        res.status(404).json({ message: 'No products with low stock found' });
+      }
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
   };
+  
+  
 
   module.exports = {
     getAllProd,

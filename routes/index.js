@@ -7,12 +7,10 @@ router.use('/products', require('./products'));
 router.use('/orders', require('./orders'));
 
 router.get('/', (req, res) => {
-  sendNotification('byutesting', 'Welcome to the CSE 341 Final Project API');
   res.send('Welcome to the CSE 341 Final Project API');
-
 });
 
-router.get('healthcheck', (req, res) => {
+router.get('/healthcheck', (req, res) => {
   res.send('OK');
 });
 

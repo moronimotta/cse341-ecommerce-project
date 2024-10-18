@@ -1,6 +1,6 @@
 #!/bin/bash
 
-URL="https://cse341-ecommerce-project.onrender.com/products/lowstock"
+URL="https://cse341-ecommerce-project.onrender.com/products/get/low-stock"
 
 response=$(curl --silent --write-out "%{http_code}" --output /dev/null "$URL")
 products=$(curl --silent "$URL")
