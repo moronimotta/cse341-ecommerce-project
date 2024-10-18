@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# URL="https://cse341-ecommerce-project.onrender.com"
-URL="http://localhost:8080"
+URL="https://cse341-ecommerce-project.onrender.com"
 
 response=$(curl --write-out "%{http_code}" --silent --output /dev/null "$URL")
 
