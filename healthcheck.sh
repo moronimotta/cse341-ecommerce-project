@@ -4,8 +4,12 @@ URL="https://cse341-ecommerce-project.onrender.com"
 
 response=$(curl --write-out "%{http_code}" --silent --output /dev/null "$URL")
 
+current_date=$(date '+%Y-%m-%d %H:%M:%S')
+
 if [ "$response" -ne 200 ]; then
-    curl -d "System Alert: Health check failed" ntfy.sh/byu_ecommerce_errors
+    message="Message: Health check failed\n\nDate: $current_date"
+    curl -d "$message" ntfy.sh/byu_ecommerce_errors
 else
-    curl -d "System Alert: Health check OK" ntfy.sh/byu_ecommerce_logs
+    message="Message: Health check OK\n\nDate: $current_date"
+    curl -d "$message" ntfy.sh/byu_ecommerce_logs
 fi

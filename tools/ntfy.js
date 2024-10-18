@@ -1,4 +1,3 @@
-
 const sendNotification = async (message, log_type = "info") => {
     let topic = 'byu_ecommerce_logs';
     try {
@@ -9,13 +8,15 @@ const sendNotification = async (message, log_type = "info") => {
             'Tags': 'info'
         };
 
+        const formattedMessage = `Message: ${message}\n\nDate: ${new Date().toLocaleString()}`;
+
         switch (log_type) {
             case 'system_error':
                 const errorStack = message.stack.split('\n');
                 const errorMessage = errorStack[0].trim();
                 const errorLocation = errorStack[1].trim();
 
-                message = `${errorMessage}\n\nMessage: ${errorLocation}\n\nDate: ${new Date().toLocaleString()}`;
+                message = `Error Message: ${errorMessage}\n\nLocation: ${errorLocation}\n\nDate: ${new Date().toLocaleString()}`;
 
                 headers.Title = 'System Error';
                 headers.Priority = 'high';
@@ -24,6 +25,7 @@ const sendNotification = async (message, log_type = "info") => {
                 break;
 
             default:
+                message = formattedMessage; 
                 headers.Title = 'Information';
                 headers.Priority = 'low';
                 headers.Tags = 'info';
@@ -47,5 +49,4 @@ const sendNotification = async (message, log_type = "info") => {
     }
 };
 
-
-module.exports = sendNotification; 
+module.exports = sendNotification;

@@ -9,9 +9,6 @@ dotenv.config();
 const userCollection = 'users';
 const ObjectId = require('mongodb').ObjectId;
 
-// Users: id, name, last_name, email, api_key, active, role
-
-
 const getUser = async (req, res, next) => {
   try {
 
