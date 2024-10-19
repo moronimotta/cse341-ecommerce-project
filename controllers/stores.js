@@ -52,9 +52,6 @@ const updateStore = async (req, res, next) => {
     }
 
     await db.collection(storeCollection).updateOne({ _id: new ObjectId(id) }, { $set: store });
-
-    sendNotification({ storeId: id, status: 'updated' }, 'store_updated');
-
     res.setHeader('Content-Type', 'application/json');
     return res.status(204).json(store);
   } catch (err) {
@@ -74,8 +71,6 @@ const createStore = async (req, res, next) => {
     store.status = store.status || 'open';
 
     await db.collection(storeCollection).insertOne(store);
-
-    sendNotification("Store " + store.name + " successfully created", 'info');
 
     res.setHeader('Content-Type', 'application/json');
     res.status(201).json(store);

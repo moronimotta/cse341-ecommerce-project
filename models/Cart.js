@@ -30,6 +30,11 @@ const cartSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  store_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Store',
+    required: true,
+  },
 });
 
 const Cart = mongoose.model('Cart', cartSchema);

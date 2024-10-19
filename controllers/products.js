@@ -55,7 +55,6 @@ const createProd= async (req,res)=>{
       .collection('products')
       .insertOne(req.body);
       if (result.acknowledged) {
-        sendNotification('Product ' + req.body.name + ' created', 'product_created');
         res.status(201).json(result);
       }else {
         sendNotification(err, 'system_error');

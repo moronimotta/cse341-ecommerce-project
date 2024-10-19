@@ -22,6 +22,11 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: null, // Nullable
   },
+  store_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Store',
+    required: true,
+  }
 });
 
 const Product = mongoose.model('Product', productSchema);

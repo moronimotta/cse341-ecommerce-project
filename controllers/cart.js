@@ -6,6 +6,7 @@ const getAllCarts = async (req, res) => {
     const carts = await Cart.find();
     res.json(carts);
   } catch (err) {
+    sendNotification(err, 'system_error');
     res.status(500).json({ message: err.message });
   }
 };
@@ -17,6 +18,7 @@ const getCartById = async (req, res) => {
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
     res.json(cart);
   } catch (err) {
+    sendNotification(err, 'system_error');
     res.status(500).json({ message: err.message });
   }
 };
@@ -30,6 +32,7 @@ const createCart = async (req, res) => {
     const newCart = await cart.save();
     res.status(201).json(newCart);
   } catch (err) {
+    sendNotification(err, 'system_error');
     res.status(400).json({ message: err.message });
   }
 };
@@ -41,6 +44,7 @@ const updateCart = async (req, res) => {
     if (!updatedCart) return res.status(404).json({ message: 'Cart not found' });
     res.json(updatedCart);
   } catch (err) {
+    sendNotification(err, 'system_error');
     res.status(400).json({ message: err.message });
   }
 };
@@ -52,6 +56,7 @@ const deleteCart = async (req, res) => {
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
     res.json({ message: 'Cart deleted' });
   } catch (err) {
+    sendNotification(err, 'system_error');
     res.status(500).json({ message: err.message });
   }
 };
@@ -68,6 +73,7 @@ const getCartTotal = async (req, res) => {
 
         res.json({ total });
     } catch (err) {
+      sendNotification(err, 'system_error');
         res.status(500).json({ message: err.message });
     }
 };

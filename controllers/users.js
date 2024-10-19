@@ -43,27 +43,26 @@ const getUsers = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
   try {
+    // swagger-tags=['Users']
+    let db = mongodb.getDb();
     const id = req.params.id;
+    const user = req.body;
+    const result = await db.collection(userCollection).find({ _id: new ObjectId(id) });
+    const users = await result.toArray();
 
-    const userUpdates = req.body;
-
-    const updatedUser = await User.findByIdAndUpdate(id, userUpdates, {
-      new: true, 
-      runValidators: true, 
-    });
-
-    if (!updatedUser) {
+    if (users.length === 0) {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    await db.collection(userCollection).updateOne({ _id: new ObjectId(id) }, { $set: user });
+
     res.setHeader('Content-Type', 'application/json');
-    return res.status(200).json(updatedUser); 
+    return res.status(204).json(user);
   } catch (err) {
     sendNotification(err, 'system_error');
     return res.status(500).json({ message: err.message });
   }
 };
-
 
 const createUser = async (req, res, next) => {
   try {
@@ -76,13 +75,10 @@ const createUser = async (req, res, next) => {
     user.api_key = apiKeyGen();
     user.active = true;
 
-    // Create a new user instance
-    const newUser = await User.create(user); // Use User.create directly
-
-    sendNotification("User " + newUser.name + " successfully created", 'info');
+    const newUser = await User.create(user); 
 
     res.setHeader('Content-Type', 'application/json');
-    res.status(201).json(newUser); // Send the created user back
+    res.status(201).json(newUser); 
   } catch (err) {
     sendNotification(err, 'system_error');
     res.status(500).json({ message: 'Internal server error', error: err.message });
