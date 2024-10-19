@@ -11,7 +11,6 @@ const ObjectId = require('mongodb').ObjectId;
 
 const getUser = async (req, res, next) => {
   try {
-
     // swagger-tags=['Users']
     let db = mongodb.getDb();
     const id = req.params.id;
@@ -44,7 +43,13 @@ const updateUser = async (req, res, next) => {
     // swagger-tags=['Users']
     let db = mongodb.getDb();
     const id = req.params.id;
-    const user = req.body;
+    const user = {
+      name: req.body.name,
+      last_name: req.body.last_name,
+      role: req.body.role,
+      active: req.body.active,
+      api_key: req.body.api_key
+    };
     const result = await db.collection(userCollection).find({ _id: new ObjectId(id) });
     const users = await result.toArray();
 
@@ -67,7 +72,12 @@ const createUser = async (req, res, next) => {
   try {
     // swagger-tags=['Users']
     let db = mongodb.getDb();
-    let user = req.body;
+    const user = {
+      name: req.body.name,
+      last_name: req.body.last_name,
+      role: req.body.role,
+      active: req.body.active,
+    };
 
     if (!user.role) {
       user.role = 'customer';
