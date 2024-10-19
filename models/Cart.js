@@ -2,14 +2,14 @@
 const mongoose = require('mongoose');
 
 const cartSchema = new mongoose.Schema({
-  userId: {
+  user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
   items: [
     {
-      productId: {
+      product_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required: true,
@@ -26,7 +26,7 @@ const cartSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
-  createdAt: {
+  created_at: {
     type: Date,
     default: Date.now,
   },

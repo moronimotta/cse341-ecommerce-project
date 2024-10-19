@@ -2,12 +2,13 @@ const router = require('express').Router();
 const swaggerUI = require('swagger-ui-express');
 const dotenv = require('dotenv');
 dotenv.config();
+let swaggerDocument;
 
 if(process.env.ENV !== 'production') {
-    const swaggerDocument = require('../swagger-dev.json');
+    swaggerDocument = require('../swagger-dev.json');
 }else{
 
-    const swaggerDocument = require('../swagger-prod.json');
+    swaggerDocument = require('../swagger-prod.json');
 }
 
 router.use('/api-docs', swaggerUI.serve);
