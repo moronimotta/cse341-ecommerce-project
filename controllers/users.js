@@ -57,6 +57,7 @@ const updateUser = async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     return res.status(204).json(user);
   } catch (err) {
+    sendNotification(err, 'system_error');
     return res.status(500).json({ message: err.message });
   }
 };
@@ -74,15 +75,13 @@ const createUser = async (req, res, next) => {
 
     user.api_key = apiKeyGen();
     user.active = true;
-    if (process.env.TEST_ERROR) {
-      throw new Error('Testing error');
-    }
-
     await db.collection(userCollection).insertOne(user);
+
+    sendNotification("User " + user.name + "successfully created", 'info');
+
     res.setHeader('Content-Type', 'application/json');
     res.status(201).json(user);
   } catch (err) {
-    console.error('Error creating user:', err);
     sendNotification(err, 'system_error');
     res.status(500).json({ message: 'Internal server error', error: err.message });
   }
@@ -99,6 +98,7 @@ const deleteUser = async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(204).send();
   } catch (err) {
+    sendNotification(err, 'system_error');
     throw res.json(createError(500, err.message));
   }
 };

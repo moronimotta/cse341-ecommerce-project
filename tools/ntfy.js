@@ -1,4 +1,10 @@
-const sendNotification = async (message, log_type = "info") => {
+const dotenv = require('dotenv');
+dotenv.config();
+const sendNotification = async (admin_message, manager_message, log_type = "info", manager_topic) => {
+    if (process.env.ENV !== 'production') {
+        return 
+    }
+
     let topic = 'byu_ecommerce_logs';
     try {
         let headers = {
@@ -8,15 +14,15 @@ const sendNotification = async (message, log_type = "info") => {
             'Tags': 'info'
         };
 
-        const formattedMessage = `Message: ${message}\n\nDate: ${new Date().toLocaleString()}`;
+        const formattedMessage = `Message: ${admin_message}\n\nDate: ${new Date().toLocaleString()}`;
 
         switch (log_type) {
             case 'system_error':
-                const errorStack = message.stack.split('\n');
+                const errorStack = admin_message.stack.split('\n');
                 const errorMessage = errorStack[0].trim();
                 const errorLocation = errorStack[1].trim();
 
-                message = `Error Message: ${errorMessage}\n\nLocation: ${errorLocation}\n\nDate: ${new Date().toLocaleString()}`;
+                admin_message = `Error Message: ${errorMessage}\n\nLocation: ${errorLocation}\n\nDate: ${new Date().toLocaleString()}`;
 
                 headers.Title = 'System Error';
                 headers.Priority = 'high';
@@ -25,21 +31,35 @@ const sendNotification = async (message, log_type = "info") => {
                 break;
 
             default:
-                message = formattedMessage; 
+                admin_message = formattedMessage; 
                 headers.Title = 'Information';
                 headers.Priority = 'low';
                 headers.Tags = 'info';
                 break;
         }
 
-        const response = await fetch(`https://ntfy.sh/${topic}`, {
+        let response = await fetch(`https://ntfy.sh/${topic}`, {
             method: 'POST',
-            body: message,
+            body: admin_message,
             headers: headers
         });
 
         if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);
+        }
+
+        if (manager_message) {
+            headers.Title = 'Manager Notification';
+            headers.Tags = 'manager';
+            response = await fetch(`https://ntfy.sh/${manager_topic}`, {
+                method: 'POST',
+                body: manager_message,
+                headers: headers
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
         }
 
         const data = await response.text();

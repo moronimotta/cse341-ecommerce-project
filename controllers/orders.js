@@ -1,4 +1,5 @@
 const mongodb = require('../data/database.js');
+const sendNotification = require('../tools/ntfy.js');
 const ObjectId = require('mongodb').ObjectId;
 
 const getAllOrders = async (req, res) => {
@@ -9,6 +10,7 @@ const getAllOrders = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(response);
   } catch (error) {
+    sendNotification(err, "", 'system_error');
     res.status(500).json({ message: error.message || 'An error occurred while fetching the order.' });
   }
 };
@@ -29,6 +31,7 @@ const getSingleOrder = async (req, res) => {
         res.status(404).json({ message: 'Order not found' });
       }
     } catch (error) {
+      sendNotification(err, "", 'system_error');
       res.status(400).json({ message: error.message || 'An unknown error occurred' });
     }
   };
@@ -52,6 +55,7 @@ const getSingleOrder = async (req, res) => {
         throw new Error('An error ocurred while creating the order');
       }
     } catch (error) {
+      sendNotification(err,"Attempt to create new order for user " + req.body.user_id + " failed" , 'system_error');
       res.status(500).json({ error: error.message || 'An unknown error occurred' });
     }
 };
@@ -81,6 +85,7 @@ const updateOrder = async (req, res) => {
         throw new Error('Order update was not successful');
       }
     } catch (error) {
+      sendNotification(err, "Attempt to update order " + req.params.id + " failed", 'system_error');
       res.status(500).json({ error: error.message || 'An unknown error occurred' });
     }
   };
@@ -100,6 +105,7 @@ const updateOrder = async (req, res) => {
         res.status(404).json({ message: 'Order not found' });
       }
     } catch (error) {
+      sendNotification(err, "Attempt to delete order " + req.params.id + " failed", 'system_error');
       res.status(500).json({ error: error.message || 'An unknown error occurred' });
     }
   };

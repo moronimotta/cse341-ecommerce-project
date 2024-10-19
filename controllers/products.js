@@ -1,4 +1,5 @@
 const mongodb = require('../data/database');
+const sendNotification = require('../tools/ntfy');
 const ObjectId = require ('mongodb').ObjectId;
 
 
@@ -48,22 +49,16 @@ const getSingleProd = async (req, res, next) => {
 //--Function to CREATE A NEW CONSOLE DOCUMENT
 //----------------------------------------
 const createProd= async (req,res)=>{
-    // const productBody = {
-    //     name: req.body.name,
-    //     stock: req.body.name,
-    //     description: req.body.description,
-    //     updated_at: req.body.updated_at,
-    //     brand: req.body.brand,
-    //     category: req.body.category
-    //   };
     const result = await mongodb
       .getDb()
         
       .collection('products')
       .insertOne(req.body);
       if (result.acknowledged) {
+        sendNotification('Product ' + req.body.name + ' created', 'product_created');
         res.status(201).json(result);
       }else {
+        sendNotification(err, 'system_error');
         res.status(500).json(result.error || "Error while Creating");
       }
   
@@ -86,6 +81,7 @@ const updateProd= async (req,res)=>{
       if (result.modifiedCount > 0 ){
         res.status(204).send();
       }else {
+        sendNotification(err, 'system_error');
         res.status(500).json(result.error || "Error while Updating");
       }
   };
@@ -104,6 +100,7 @@ const deleteProd= async(req,res)=>{
       if (result.deletedCount > 0) {
         res.status(204).send();
       }else {
+        sendNotification(err, 'system_error');
         res.status(500).json(result.error || 'Error while deleting');
       }
   };
@@ -124,6 +121,7 @@ const deleteProd= async(req,res)=>{
         res.status(404).json({ message: 'No products with low stock found' });
       }
     } catch (err) {
+      sendNotification(err, 'system_error');
       res.status(500).json({ message: err.message });
     }
   };
