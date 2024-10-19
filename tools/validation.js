@@ -3,15 +3,14 @@ const Validator = require('validatorjs');
 const usersRule = () => ({
     name: 'required|string',
     last_name: 'required|string', 
-    role: 'required|in:admin,user',
-    active: 'required|boolean'  
+    email: 'required|email',
+    role: 'required|in:admin,user,manager',
   });
 
   const productsRule = () => ({
     name: 'required|string', 
     stock: 'required|integer|min:0', 
     description: 'nullable|string',  
-    updated_at: 'nullable|date',  
     brand: 'nullable|string',  
     category: 'nullable|string' 
   });
@@ -22,6 +21,15 @@ const usersRule = () => ({
     date: 'required|date',  
     cart_id: 'required|string'  
   });
+
+
+const storesRule = () => ({
+  name: 'required|string',
+  address: 'required|string',
+  phone: 'required|string',
+  email: 'required|email',
+  status: 'required|in:open,closed',
+});
 
 const validate = (rules) => {
   return (req, res, next) => {
@@ -37,4 +45,4 @@ const validate = (rules) => {
   };
 };
 
-module.exports = { usersRule, productsRule, ordersRule, validate };
+module.exports = { usersRule, productsRule, ordersRule, storesRule, validate };
