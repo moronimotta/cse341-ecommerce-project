@@ -1,6 +1,7 @@
 const mongodb = require('../data/database.js');
 const sendNotification = require('../tools/ntfy.js');
 const ObjectId = require('mongodb').ObjectId;
+const Order = require('../models/Orders');
 
 const getAllOrders = async (req, res) => {
   try {
@@ -10,7 +11,7 @@ const getAllOrders = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(response);
   } catch (error) {
-    sendNotification(err, 'system_error');
+    sendNotification(error, 'system_error');
     res.status(500).json({ message: error.message || 'An error occurred while fetching the order.' });
   }
 };
@@ -31,51 +32,63 @@ const getSingleOrder = async (req, res) => {
         res.status(404).json({ message: 'Order not found' });
       }
     } catch (error) {
-      sendNotification(err, 'system_error');
+      sendNotification(error, 'system_error');
       res.status(400).json({ message: error.message || 'An unknown error occurred' });
     }
   };
 
   const createOrder = async (req, res) => {
-    const order = {
+    const orderData = {
       user_id: req.body.user_id,
+      cart_id: req.body.cart_id,
       amount: req.body.amount,
       status: req.body.status,
       date: req.body.date,
-      cart_id: req.body.cart_id
     };
   
     try {
+      const newOrder = new Order(orderData);
+      await newOrder.validate();
+  
+      // Using mongodb native methods as it's easier for me, but validating with mongoose.
       const database = await mongodb.getDb();
-      const response = await database.collection('orders').insertOne(order);
-      
+      const response = await database.collection('orders').insertOne(orderData);
+  
       if (response.acknowledged) {
-        res.status(201).json({ message: 'Order created successfully'});
+        res.status(201).json({ message: 'Order created successfully' });
       } else {
-        throw new Error('An error ocurred while creating the order');
+        throw new Error('An error occurred while creating the order');
       }
     } catch (error) {
-      sendNotification(err, 'system_error');
-      res.status(500).json({ error: error.message || 'An unknown error occurred' });
+      if (error.name === 'ValidationError') {
+        res.status(400).json({ error: error.message });
+      } else {
+        sendNotification(error, 'system_error');
+        res.status(500).json({ error: error.message || 'An unknown error occurred' });
+      }
     }
-};
+  };
 
-const updateOrder = async (req, res) => {
+  const updateOrder = async (req, res) => {
     if (!ObjectId.isValid(req.params.id)) {
-      res.status(400).json('Must be a valid Order ID to find an order');
+      return res.status(400).json('Must be a valid Order ID to update an order');
     }
-    const order = {
-        user_id: req.body.user_id,
-        amount: req.body.amount,
-        status: req.body.status,
-        date: req.body.date,
-        cart_id: req.body.cart_id
+
+    const orderData = {
+      user_id: req.body.user_id,
+      cart_id: req.body.cart_id,
+      amount: req.body.amount,
+      status: req.body.status,
+      date: req.body.date,
     };
   
     try {
+      const updatedOrder = new Order(orderData);
+      await updatedOrder.validate();
+  
       const orderId = new ObjectId(req.params.id);
       const database = await mongodb.getDb();
-      const response = await database.collection('orders').replaceOne({ _id: orderId }, order);
+      const response = await database.collection('orders').replaceOne({ _id: orderId }, orderData);
   
       if (response.modifiedCount > 0) {
         res.status(204).send(); 
@@ -85,8 +98,12 @@ const updateOrder = async (req, res) => {
         throw new Error('Order update was not successful');
       }
     } catch (error) {
-      sendNotification(err, 'system_error');
-      res.status(500).json({ error: error.message || 'An unknown error occurred' });
+      if (error.name === 'ValidationError') {
+        res.status(400).json({ error: error.message });
+      } else {
+        sendNotification(error, 'system_error');
+        res.status(500).json({ error: error.message || 'An unknown error occurred' });
+      }
     }
   };
 
@@ -105,7 +122,7 @@ const updateOrder = async (req, res) => {
         res.status(404).json({ message: 'Order not found' });
       }
     } catch (error) {
-      sendNotification(err, 'system_error');
+      sendNotification(error, 'system_error');
       res.status(500).json({ error: error.message || 'An unknown error occurred' });
     }
   };

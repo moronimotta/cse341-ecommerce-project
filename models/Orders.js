@@ -1,25 +1,32 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  amount: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  status: {
+  user_id: {
     type: String,
-    enum: ['paid', 'refund', 'pending'],
-    required: true,
-  },
-  date: {
-    type: Date,
-    required: true,
-    default: Date.now,
+    required: [true, 'User ID is required'],
   },
   cart_id: {
     type: String,
-    required: true,
+    required: [true, 'Cart ID is required'],
   },
+  amount: {
+    type: Number,
+    required: [true, 'Amount is required'],
+    min: [0, 'Amount cannot be negative']
+  },
+  status: {
+    type: String,
+    enum: {
+      values: ['paid', 'refund', 'pending'],
+      message: '{VALUE} is not a valid status'
+    },
+    required: [true, 'Status is required']
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+    required: [true, 'Date is required']
+  }
 });
 
 const Order = mongoose.model('Order', orderSchema);
