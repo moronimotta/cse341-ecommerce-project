@@ -11,7 +11,12 @@ const initDb = (callback) => {
     return callback(null, _db);
   }
 
-  MongoClient.connect(uri)
+  MongoClient.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    connectTimeoutMS: 30000,  
+    socketTimeoutMS: 30000,   
+  })
     .then((client) => {
       _db = client.db(dbName);
       callback(null, _db);
