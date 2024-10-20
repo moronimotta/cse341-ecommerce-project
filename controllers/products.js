@@ -57,7 +57,7 @@ const createProd= async (req,res)=>{
       if (result.acknowledged) {
         res.status(201).json(result);
       }else {
-        sendNotification(err, 'system_error');
+        sendNotification(result.error, 'system_error');
         res.status(500).json(result.error || "Error while Creating");
       }
   
@@ -80,7 +80,7 @@ const updateProd= async (req,res)=>{
       if (result.modifiedCount > 0 ){
         res.status(204).send();
       }else {
-        sendNotification(err, 'system_error');
+        sendNotification(result.error, 'system_error');
         res.status(500).json(result.error || "Error while Updating");
       }
   };
@@ -99,7 +99,7 @@ const deleteProd= async(req,res)=>{
       if (result.deletedCount > 0) {
         res.status(204).send();
       }else {
-        sendNotification(err, 'system_error');
+        sendNotification(result.error, 'system_error');
         res.status(500).json(result.error || 'Error while deleting');
       }
   };

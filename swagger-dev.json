@@ -382,13 +382,25 @@
         "tags": [
           "Products"
         ],
-        "description": "",
+        "description": "Retrieve all products.",
         "produces": [
           "application/json"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "examples": {
+              "application/json": [
+                {
+                  "_id": "60c72b2f4f1a4a3d2e75b9d3",
+                  "name": "Product Name",
+                  "stock": 100,
+                  "description": "Product Description",
+                  "brand": "Brand Name",
+                  "category": "Category Name"
+                }
+              ]
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -399,7 +411,7 @@
         "tags": [
           "Products"
         ],
-        "description": "",
+        "description": "Create a new product.",
         "parameters": [
           {
             "name": "body",
@@ -435,7 +447,13 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Created",
+            "examples": {
+              "application/json": {
+                "acknowledged": true,
+                "insertedId": "60c72b2f4f1a4a3d2e75b9d3"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -448,7 +466,7 @@
         "tags": [
           "Products"
         ],
-        "description": "",
+        "description": "Retrieve a single product by its ID.",
         "produces": [
           "application/json"
         ],
@@ -462,7 +480,17 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "examples": {
+              "application/json": {
+                "_id": "60c72b2f4f1a4a3d2e75b9d3",
+                "name": "Product Name",
+                "stock": 100,
+                "description": "Product Description",
+                "brand": "Brand Name",
+                "category": "Category Name"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -473,7 +501,7 @@
         "tags": [
           "Products"
         ],
-        "description": "",
+        "description": "Delete a product by its ID.",
         "parameters": [
           {
             "name": "id",
@@ -495,18 +523,52 @@
         "tags": [
           "Products"
         ],
-        "description": "",
+        "description": "Update a product by its ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Updated Product Name"
+                },
+                "stock": {
+                  "type": "integer",
+                  "example": 150
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Updated Product Description"
+                },
+                "brand": {
+                  "type": "string",
+                  "example": "Updated Brand Name"
+                },
+                "category": {
+                  "type": "string",
+                  "example": "Updated Category Name"
+                }
+              },
+              "required": ["name", "stock", "description", "brand", "category"]
+            }
           }
         ],
         "responses": {
           "204": {
             "description": "No Content"
+          },
+          "404": {
+            "description": "Product Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -519,13 +581,25 @@
         "tags": [
           "Products"
         ],
-        "description": "",
+        "description": "Retrieve all products with stock lower than 20.",
         "produces": [
           "application/json"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "examples": {
+              "application/json": [
+                {
+                  "_id": "60c72b2f4f1a4a3d2e75b9d3",
+                  "name": "Low Stock Product",
+                  "stock": 10,
+                  "description": "Product with low stock",
+                  "brand": "Brand Name",
+                  "category": "Category Name"
+                }
+              ]
+            }
           },
           "404": {
             "description": "Not Found"
