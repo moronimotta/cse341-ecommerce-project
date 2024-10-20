@@ -32,27 +32,43 @@
       "description": "Operations related to orders"
     }
   ],
-  "paths": { 
+  "paths": {
     "/stores/": {
       "get": {
         "tags": [
-        "Stores"
-      ],
-        "description": "",
+          "Stores"
+        ],
+        "description": "Retrieve a list of all stores.",
         "produces": [
           "application/json"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Successfully retrieved stores list.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "address": { "type": "string" },
+                  "phone": { "type": "string" },
+                  "email": { "type": "string" },
+                  "status": { "type": "string", "enum": ["open", "closed"] }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
       "post": {
         "tags": [
-        "Stores"
-      ],
-        "description": "",
+          "Stores"
+        ],
+        "description": "Create a new store.",
         "produces": [
           "application/json"
         ],
@@ -61,30 +77,15 @@
             "name": "body",
             "in": "body",
             "required": true,
+            "description": "JSON object representing the new store.",
             "schema": {
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string",
-                  "example": "Store Name"
-                },
-                "address": {
-                  "type": "string",
-                  "example": "123 Main St"
-                },
-                "phone": {
-                  "type": "string",
-                  "example": "123-456-7890"
-                },
-                "email": {
-                  "type": "string",
-                  "example": "store@example.com"
-                },
-                "status": {
-                  "type": "string",
-                  "enum": ["open", "closed"],
-                  "example": "open"
-                }
+                "name": { "type": "string", "example": "Store Name" },
+                "address": { "type": "string", "example": "123 Main St" },
+                "phone": { "type": "string", "example": "123-456-7890" },
+                "email": { "type": "string", "example": "store@example.com" },
+                "status": { "type": "string", "enum": ["open", "closed"], "example": "open" }
               },
               "required": ["name", "address", "phone", "email", "status"]
             }
@@ -92,7 +93,7 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Store successfully created."
           },
           "500": {
             "description": "Internal Server Error"
@@ -103,9 +104,9 @@
     "/stores/{id}": {
       "get": {
         "tags": [
-        "Stores"
-      ],
-        "description": "",
+          "Stores"
+        ],
+        "description": "Retrieve details of a specific store using its ID.",
         "produces": [
           "application/json"
         ],
@@ -114,20 +115,37 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the store.",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Store details retrieved successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "address": { "type": "string" },
+                "phone": { "type": "string" },
+                "email": { "type": "string" },
+                "status": { "type": "string", "enum": ["open", "closed"] }
+              }
+            }
+          },
+          "404": {
+            "description": "Store not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
       "put": {
         "tags": [
-        "Stores"
-      ],
-        "description": "",
+          "Stores"
+        ],
+        "description": "Update details of a specific store using its ID.",
         "produces": [
           "application/json"
         ],
@@ -136,36 +154,22 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the store.",
             "type": "string"
           },
           {
             "name": "body",
             "in": "body",
             "required": true,
+            "description": "JSON object containing updated store information.",
             "schema": {
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string",
-                  "example": "Store Name"
-                },
-                "address": {
-                  "type": "string",
-                  "example": "123 Main St"
-                },
-                "phone": {
-                  "type": "string",
-                  "example": "123-456-7890"
-                },
-                "email": {
-                  "type": "string",
-                  "example": "store@example.com"
-                },
-                "status": {
-                  "type": "string",
-                  "enum": ["open", "closed"],
-                  "example": "open"
-                }
+                "name": { "type": "string", "example": "Store Name" },
+                "address": { "type": "string", "example": "123 Main St" },
+                "phone": { "type": "string", "example": "123-456-7890" },
+                "email": { "type": "string", "example": "store@example.com" },
+                "status": { "type": "string", "enum": ["open", "closed"], "example": "open" }
               },
               "required": ["name", "address", "phone", "email", "status"]
             }
@@ -173,7 +177,13 @@
         ],
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "Store updated successfully."
+          },
+          "400": {
+            "description": "Bad request - Invalid store information."
+          },
+          "404": {
+            "description": "Store not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -182,9 +192,9 @@
       },
       "delete": {
         "tags": [
-        "Stores"
-      ],
-        "description": "",
+          "Stores"
+        ],
+        "description": "Delete a specific store using its ID.",
         "produces": [
           "application/json"
         ],
@@ -193,15 +203,19 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the store.",
             "type": "string"
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "204": {
-            "description": "No Content"
+            "description": "Store deleted successfully."
+          },
+          "404": {
+            "description": "Store not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -211,13 +225,16 @@
         "tags": [
           "Users"
         ],
-        "description": "",
+        "description": "Retrieve a list of all users.",
         "produces": [
           "application/json"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Successfully retrieved users list."
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
@@ -225,7 +242,7 @@
         "tags": [
           "Users"
         ],
-        "description": "",
+        "description": "Create a new user.",
         "produces": [
           "application/json"
         ],
@@ -234,26 +251,14 @@
             "name": "body",
             "in": "body",
             "required": true,
+            "description": "JSON object representing the new user.",
             "schema": {
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string",
-                  "example": "John"
-                },
-                "last_name": {
-                  "type": "string",
-                  "example": "Doe"
-                },
-                "email": {
-                  "type": "string",
-                  "example": "john.doe@example.com"
-                },
-                "role": {
-                  "type": "string",
-                  "enum": ["admin", "customer", "manager"],
-                  "example": "customer"
-                }
+                "name": { "type": "string", "example": "John" },
+                "last_name": { "type": "string", "example": "Doe" },
+                "email": { "type": "string", "example": "john.doe@example.com" },
+                "role": { "type": "string", "enum": ["admin", "customer", "manager"], "example": "customer" }
               },
               "required": ["name", "last_name", "email", "role"]
             }
@@ -261,7 +266,7 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "User successfully created."
           },
           "500": {
             "description": "Internal Server Error"
@@ -272,9 +277,9 @@
     "/users/{id}": {
       "get": {
         "tags": [
-        "Users"
-      ],
-        "description": "",
+          "Users"
+        ],
+        "description": "Retrieve details of a specific user by ID.",
         "produces": [
           "application/json"
         ],
@@ -283,20 +288,27 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the user.",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "User details retrieved successfully."
+          },
+          "404": {
+            "description": "User not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
       "put": {
         "tags": [
-        "Users"
-      ],
-        "description": "",
+          "Users"
+        ],
+        "description": "Update details of a specific user by ID.",
         "produces": [
           "application/json"
         ],
@@ -305,15 +317,35 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the user.",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "JSON object containing updated user information.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "example": "John" },
+                "last_name": { "type": "string", "example": "Doe" },
+                "email": { "type": "string", "example": "john.doe@example.com" },
+                "role": { "type": "string", "enum": ["admin", "customer", "manager"], "example": "customer" }
+              },
+              "required": ["name", "last_name", "email", "role"]
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "User updated successfully."
+          },
+          "400": {
+            "description": "Bad request - Invalid user information."
           },
           "404": {
-            "description": "Not Found"
+            "description": "User not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -322,9 +354,9 @@
       },
       "delete": {
         "tags": [
-        "Users"
-      ],
-        "description": "",
+          "Users"
+        ],
+        "description": "Delete a specific user by ID.",
         "produces": [
           "application/json"
         ],
@@ -333,34 +365,35 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the user.",
             "type": "string"
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "204": {
-            "description": "No Content"
+            "description": "User deleted successfully."
+          },
+          "404": {
+            "description": "User not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
     "/products/": {
-      "tags": [
-        "Products"
-      ],
       "get": {
         "tags": [
           "Products"
         ],
-        "description": "",
+        "description": "Retrieve a list of all products.",
         "produces": [
           "application/json"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Successfully retrieved products list."
           },
           "500": {
             "description": "Internal Server Error"
@@ -371,35 +404,21 @@
         "tags": [
           "Products"
         ],
-        "description": "",
+        "description": "Create a new product.",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
+            "description": "JSON object representing the new product.",
             "schema": {
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string",
-                  "example": "Product Name"
-                },
-                "stock": {
-                  "type": "integer",
-                  "example": 100
-                },
-                "description": {
-                  "type": "string",
-                  "example": "Product Description"
-                },
-                "brand": {
-                  "type": "string",
-                  "example": "Brand Name"
-                },
-                "category": {
-                  "type": "string",
-                  "example": "Category Name"
-                }
+                "name": { "type": "string", "example": "Product Name" },
+                "stock": { "type": "integer", "example": 100 },
+                "description": { "type": "string", "example": "Product Description" },
+                "brand": { "type": "string", "example": "Brand Name" },
+                "category": { "type": "string", "example": "Category Name" }
               },
               "required": ["name", "stock", "description", "brand", "category"]
             }
@@ -407,7 +426,7 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Product successfully created."
           },
           "500": {
             "description": "Internal Server Error"
@@ -420,7 +439,7 @@
         "tags": [
           "Products"
         ],
-        "description": "",
+        "description": "Retrieve details of a specific product by ID.",
         "produces": [
           "application/json"
         ],
@@ -429,34 +448,16 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the product.",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Product details retrieved successfully."
           },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Products"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
+          "404": {
+            "description": "Product not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -467,40 +468,64 @@
         "tags": [
           "Products"
         ],
-        "description": "",
+        "description": "Update details of a specific product by ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the product.",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "JSON object containing updated product information.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "example": "Product Name" },
+                "stock": { "type": "integer", "example": 100 },
+                "description": { "type": "string", "example": "Product Description" },
+                "brand": { "type": "string", "example": "Brand Name" },
+                "category": { "type": "string", "example": "Category Name" }
+              }
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "Product updated successfully."
+          },
+          "404": {
+            "description": "Product not found."
           },
           "500": {
             "description": "Internal Server Error"
           }
         }
-      }
-    },
-    "/products/get/low-stock": {
-      "get": {
+      },
+      "delete": {
         "tags": [
           "Products"
         ],
-        "description": "",
-        "produces": [
-          "application/json"
+        "description": "Delete a specific product by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the product.",
+            "type": "string"
+          }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "Product deleted successfully."
           },
           "404": {
-            "description": "Not Found"
+            "description": "Product not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -509,15 +534,14 @@
       }
     },
     "/cart/": {
-      
       "get": {
         "tags": [
-        "Cart"
-      ],
-        "description": "",
+          "Cart"
+        ],
+        "description": "Retrieve details of the user's shopping cart.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Successfully retrieved cart details."
           },
           "500": {
             "description": "Internal Server Error"
@@ -526,34 +550,26 @@
       },
       "post": {
         "tags": [
-        "Cart"
-      ],
-        "description": "",
+          "Cart"
+        ],
+        "description": "Add items to the shopping cart.",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
+            "description": "JSON object representing the cart items.",
             "schema": {
               "type": "object",
               "properties": {
-                "user_id": {
-                  "type": "string",
-                  "example": "User ID"
-                },
+                "user_id": { "type": "string", "example": "User ID" },
                 "items": {
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
-                      "product_id": {
-                        "type": "string",
-                        "example": "Product ID"
-                      },
-                      "quantity": {
-                        "type": "integer",
-                        "example": 1
-                      }
+                      "product_id": { "type": "string", "example": "Product ID" },
+                      "quantity": { "type": "integer", "example": 1 }
                     }
                   }
                 }
@@ -564,10 +580,10 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Items added to cart successfully."
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad request - Invalid cart data."
           }
         }
       }
@@ -575,23 +591,24 @@
     "/cart/{id}": {
       "get": {
         "tags": [
-        "Cart"
-      ],
-        "description": "",
+          "Cart"
+        ],
+        "description": "Retrieve details of a specific cart by ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the cart.",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Cart details retrieved successfully."
           },
           "404": {
-            "description": "Not Found"
+            "description": "Cart not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -600,75 +617,53 @@
       },
       "put": {
         "tags": [
-        "Cart"
-      ],
-        "description": "",
+          "Cart"
+        ],
+        "description": "Update cart details by cart ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the cart.",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Cart updated successfully."
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad request - Invalid cart data."
           },
           "404": {
-            "description": "Not Found"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-        "Cart"
-      ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
+            "description": "Cart not found."
           },
           "500": {
             "description": "Internal Server Error"
           }
         }
-      }
-    },
-    "/cart/{id}/total": {
-      "get": {
+      },
+      "delete": {
         "tags": [
-        "Cart"
-      ],
-        "description": "",
+          "Cart"
+        ],
+        "description": "Delete a specific cart by ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the cart.",
             "type": "string"
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "Cart deleted successfully."
           },
           "404": {
-            "description": "Not Found"
+            "description": "Cart not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -679,15 +674,15 @@
     "/orders/": {
       "get": {
         "tags": [
-        "Orders"
-      ],
-        "description": "",
+          "Orders"
+        ],
+        "description": "Retrieve a list of all orders.",
         "produces": [
           "application/json"
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Successfully retrieved orders list."
           },
           "500": {
             "description": "Internal Server Error"
@@ -696,37 +691,23 @@
       },
       "post": {
         "tags": [
-        "Orders"
-      ],
-        "description": "",
+          "Orders"
+        ],
+        "description": "Create a new order.",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
+            "description": "JSON object representing the new order.",
             "schema": {
               "type": "object",
               "properties": {
-                "user_id": {
-                  "type": "string",
-                  "example": "any"
-                },
-                "amount": {
-                  "type": "number",
-                  "example": 100.0
-                },
-                "status": {
-                  "type": "string",
-                  "example": "any"
-                },
-                "date": {
-                  "type": "string",
-                  "example": "any"
-                },
-                "cart_id": {
-                  "type": "string",
-                  "example": "any"
-                }
+                "user_id": { "type": "string", "example": "any" },
+                "amount": { "type": "number", "example": 100.0 },
+                "status": { "type": "string", "example": "any" },
+                "date": { "type": "string", "example": "any" },
+                "cart_id": { "type": "string", "example": "any" }
               },
               "required": ["amount", "cart_id"]
             }
@@ -734,10 +715,10 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Order successfully created."
           },
           "422": {
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable entity - Invalid order data."
           },
           "500": {
             "description": "Internal Server Error"
@@ -748,9 +729,9 @@
     "/orders/{id}": {
       "get": {
         "tags": [
-        "Orders"
-      ],
-        "description": "",
+          "Orders"
+        ],
+        "description": "Retrieve details of a specific order by ID.",
         "produces": [
           "application/json"
         ],
@@ -759,31 +740,33 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the order.",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Order details retrieved successfully."
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad request - Invalid order data."
           },
           "404": {
-            "description": "Not Found"
+            "description": "Order not found."
           }
         }
       },
       "put": {
         "tags": [
-        "Orders"
-      ],
-        "description": "",
+          "Orders"
+        ],
+        "description": "Update details of a specific order by ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the order.",
             "type": "string"
           },
           {
@@ -792,42 +775,27 @@
             "schema": {
               "type": "object",
               "properties": {
-                "user_id": {
-                  "type": "string",
-                  "example": "any"
-                },
-                "amount": {
-                  "type": "number",
-                  "example": 100.0
-                },
-                "status": {
-                  "type": "string",
-                  "example": "any"
-                },
-                "date": {
-                  "type": "string",
-                  "example": "any"
-                },
-                "cart_id": {
-                  "type": "string",
-                  "example": "any"
-                }
+                "user_id": { "type": "string", "example": "any" },
+                "amount": { "type": "number", "example": 100.0 },
+                "status": { "type": "string", "example": "any" },
+                "date": { "type": "string", "example": "any" },
+                "cart_id": { "type": "string", "example": "any" }
               }
             }
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "Order updated successfully."
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad request - Invalid order data."
           },
           "404": {
-            "description": "Not Found"
+            "description": "Order not found."
           },
           "422": {
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable entity - Invalid data format."
           },
           "500": {
             "description": "Internal Server Error"
@@ -836,162 +804,30 @@
       },
       "delete": {
         "tags": [
-        "Orders"
-      ],
-        "description": "",
+          "Orders"
+        ],
+        "description": "Delete a specific order by ID.",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "Unique identifier of the order.",
             "type": "string"
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "Order deleted successfully."
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad request - Invalid order data."
           },
           "404": {
-            "description": "Not Found"
+            "description": "Order not found."
           },
           "500": {
             "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/store/": {
-      "get": {
-        "tags": [
-        "Stores"
-      ],
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Stores"
-        ],
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "api_key": {
-                  "example": "any"
-                },
-                "created_at": {
-                  "example": "any"
-                },
-                "status": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/store/{id}": {
-      "get": {
-        "tags": [
-          "Stores"
-        ],
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Stores"
-        ],
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Stores"
-        ],
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "204": {
-            "description": "No Content"
           }
         }
       }
