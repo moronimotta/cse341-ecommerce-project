@@ -13,56 +13,51 @@ const ObjectId = require('mongodb').ObjectId;
 
 const getUser = async (req, res, next) => {
   try {
-
-    // swagger-tags=['Users']
-    let db = mongodb.getDb();
     const id = req.params.id;
-    const result = await db.collection(userCollection).find({ _id: new ObjectId(id) });
-    const users = await result.toArray();
+    const user = await User.findById(id);
 
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(users[0]);
-  } catch (err) {
-    throw res.json(createError(500, err.message));
-  }
-};
-
-const getUsers = async (req, res, next) => {
-  try {
-    // swagger-tags=['Users']
-    let db = mongodb.getDb();
-    const result = await db.collection(userCollection).find();
-    const users = await result.toArray();
-
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(users);
-  } catch (err) {
-    throw res.json(createError(500, err.message));
-}
-};
-
-const updateUser = async (req, res, next) => {
-  try {
-    // swagger-tags=['Users']
-    let db = mongodb.getDb();
-    const id = req.params.id;
-    const user = req.body;
-    const result = await db.collection(userCollection).find({ _id: new ObjectId(id) });
-    const users = await result.toArray();
-
-    if (users.length === 0) {
+    if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    await db.collection(userCollection).updateOne({ _id: new ObjectId(id) }, { $set: user });
-
     res.setHeader('Content-Type', 'application/json');
-    return res.status(204).json(user);
+    res.status(200).json(user);
   } catch (err) {
-    sendNotification(err, 'system_error');
-    return res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
+
+
+const getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+const updateUser = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const user = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(id, user, { new: true });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 
 const createUser = async (req, res, next) => {
   try {
@@ -89,18 +84,21 @@ const createUser = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
   try {
-    // swagger-tags=['Users']
-    let db = mongodb.getDb();
     const id = req.params.id;
-    await db.collection(userCollection).deleteOne({ _id: new ObjectId(id) });
+
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     res.setHeader('Content-Type', 'application/json');
     res.status(204).send();
   } catch (err) {
-    sendNotification(err, 'system_error');
-    throw res.json(createError(500, err.message));
+    res.status(500).json({ message: err.message });
   }
 };
+
 
 // TODO: Get user by api key
 
