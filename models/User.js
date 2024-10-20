@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'user', 'manager'],
+        enum: ['admin', 'customer', 'manager'],
         required: true,
     },
     api_key: {
@@ -33,11 +33,11 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    store_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Store',
-        required: true,
-    },
+    // store_id: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Store',
+    //     required: true,
+    // },
 });
 
 const User = mongoose.model('User', userSchema);
