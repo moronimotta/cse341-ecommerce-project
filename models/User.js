@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const apiKeyGen = require('../tools/api-key-gen');
+const { v4: uuidv4 } = require('uuid');
+
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -23,7 +24,7 @@ const userSchema = new mongoose.Schema({
     },
     api_key: {
         type: String,
-        default: apiKeyGen(),
+        default: uuidv4(),
     },
     created_at: {
         type: Date,
