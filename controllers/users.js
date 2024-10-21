@@ -7,13 +7,14 @@ const User = require('../models/User');
 dotenv.config();
 const ObjectId = require('mongodb').ObjectId;
 
-const database = await mongodb.getDb();
-const collection = await database.collection('users')
+
 
 const getUser = async (req, res, next) => {
+  const database = await mongodb.getDb();
+  const collection = await database.collection('users')
   try {
     const id = req.params.id;
-    
+
     const user = await collection.findOne({ _id: new ObjectId(id) });
 
     if (!user) {
@@ -29,8 +30,10 @@ const getUser = async (req, res, next) => {
 
 
 const getUsers = async (req, res, next) => {
+  const database = await mongodb.getDb();
+  const collection = await database.collection('users')
   try {
-   
+
     const users = await collection.find().toArray();
 
     res.setHeader('Content-Type', 'application/json');
@@ -42,10 +45,12 @@ const getUsers = async (req, res, next) => {
 
 
 const updateUser = async (req, res, next) => {
+  const database = await mongodb.getDb();
+  const collection = await database.collection('users')
   try {
     const id = req.params.id;
     const user = req.body;
-  
+
     const updatedUser = collection.findOneAndUpdate({ _id: new ObjectId(id) }, { $set: user });
 
     if (!updatedUser) {
@@ -61,6 +66,8 @@ const updateUser = async (req, res, next) => {
 
 
 const createUser = async (req, res, next) => {
+  const database = await mongodb.getDb();
+  const collection = await database.collection('users')
   let user = req.body;
   try {
 
@@ -73,8 +80,7 @@ const createUser = async (req, res, next) => {
 
     user.active = true;
 
-    const database = await mongodb.getDb();
-    const response = await database.collection('users').insertOne(orderData);
+    const response = await collection.insertOne(user);
 
     if (response.acknowledged) {
       res.status(201).json({ message: 'User created successfully' });
@@ -91,6 +97,8 @@ const createUser = async (req, res, next) => {
 
 
 const deleteUser = async (req, res, next) => {
+  const database = await mongodb.getDb();
+const collection = await database.collection('users')
   try {
     const id = req.params.id;
 
