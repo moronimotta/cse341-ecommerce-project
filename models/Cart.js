@@ -22,15 +22,17 @@ const cartSchema = new mongoose.Schema({
     },
   ],
   total_price: {
+    // TODO: program will calculate the total price based on the items in the cart
     type: Number,
-    required: true,
     default: 0,
   },
   created_at: {
+    // TODO: program will set the date when the cart was created
     type: Date,
     default: Date.now,
   },
   store_id: {
+    // TODO: program will set the store_id from the item in the cart
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Store',
     required: true,

@@ -10,7 +10,7 @@ router.post('/', ordersController.createOrder);
 router.put('/:id', ordersController.updateOrder);
 router.delete('/:id', ordersController.deleteOrder);
 
-// Customer can see his orders
+// Customer can see his orders.
 router.get('/:id', ordersController.getSingleOrder);
 
 // TODO: get all order by store_id
