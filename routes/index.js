@@ -15,4 +15,8 @@ router.get('/healthcheck', (req, res) => {
   res.send('OK');
 });
 
+
+// TODO: Login and Logout routes using passport.js
+
+
 module.exports = router;

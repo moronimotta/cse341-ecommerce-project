@@ -1,19 +1,19 @@
 const router = require('express').Router();
 const prodController = require('../controllers/products');
 
-
+// Only admins
 router.get('/', prodController.getAllProd);
-//Get ony document.
 router.get('/:id', prodController.getSingleProd);
-//create
+
+// Only admins and managers (managers only change their store products)
 router.post('/', prodController.createProd);
-//DELETE USER
 router.delete('/:id', prodController.deleteProd);
-//UPDATE USER
 router.put('/:id', prodController.updateProd);
 
+// TODO: get all products according to user store_id. In Ntfy, make it send separetly to each store_topic
 router.get('/get/low-stock', prodController.getLowStock);
 
+// TODO: get all products according to user store_id 
 module.exports = router;
 
  

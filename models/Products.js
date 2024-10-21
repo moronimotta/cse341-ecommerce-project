@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema({
     default: null, // Nullable
   },
   // store_id: {
+  // TODO: id needs to be from an existing one
   //   type: mongoose.Schema.Types.ObjectId,
   //   ref: 'Store',
   //   required: true,
