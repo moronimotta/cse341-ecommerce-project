@@ -705,9 +705,7 @@
               "properties": {
                 "user_id": { "type": "string", "example": "any" },
                 "amount": { "type": "number", "example": 100.0 },
-                "status": { "type": "string", "example": "any" },
-                "date": { "type": "string", "example": "any" },
-                "cart_id": { "type": "string", "example": "any" }
+                "status": { "type": "string", "example": "any" }
               },
               "required": ["amount", "cart_id"]
             }
@@ -777,9 +775,7 @@
               "properties": {
                 "user_id": { "type": "string", "example": "any" },
                 "amount": { "type": "number", "example": 100.0 },
-                "status": { "type": "string", "example": "any" },
-                "date": { "type": "string", "example": "any" },
-                "cart_id": { "type": "string", "example": "any" }
+                "status": { "type": "string", "example": "any" }
               }
             }
           }
