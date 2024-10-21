@@ -43,7 +43,6 @@ const getSingleOrder = async (req, res) => {
       cart_id: req.body.cart_id,
       amount: req.body.amount,
       status: req.body.status,
-      date: req.body.date,
     };
   
     try {
