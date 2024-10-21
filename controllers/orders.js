@@ -83,12 +83,10 @@ const getSingleOrder = async (req, res) => {
     };
   
     try {
-      const updatedOrder = new Order(orderData);
-      await updatedOrder.validate();
   
       const orderId = new ObjectId(req.params.id);
       const database = await mongodb.getDb();
-      const response = await database.collection('orders').replaceOne({ _id: orderId }, orderData);
+      const response = await database.collection('orders').updateOne({ _id: orderId }, { $set: orderData });
   
       if (response.modifiedCount > 0) {
         res.status(204).send(); 

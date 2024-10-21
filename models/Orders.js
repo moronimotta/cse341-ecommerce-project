@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema({
   user_id: {
     type: String,
-    required: [true, 'User ID is required'],
+    // required: [true, 'User ID is required'],
   },
   cart_id: {
     type: String,
-    required: [true, 'Cart ID is required'],
+    // required: [true, 'Cart ID is required'],
   },
   amount: {
     type: Number,
@@ -25,7 +25,6 @@ const orderSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
-    required: [true, 'Date is required']
   }
 });
 
