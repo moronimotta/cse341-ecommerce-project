@@ -50,11 +50,25 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string" },
-                  "address": { "type": "string" },
-                  "phone": { "type": "string" },
-                  "email": { "type": "string" },
-                  "status": { "type": "string", "enum": ["open", "closed"] }
+                  "name": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "closed"
+                    ]
+                  }
                 }
               }
             }
@@ -81,13 +95,38 @@
             "schema": {
               "type": "object",
               "properties": {
-                "name": { "type": "string", "example": "Store Name" },
-                "address": { "type": "string", "example": "123 Main St" },
-                "phone": { "type": "string", "example": "123-456-7890" },
-                "email": { "type": "string", "example": "store@example.com" },
-                "status": { "type": "string", "enum": ["open", "closed"], "example": "open" }
+                "name": {
+                  "type": "string",
+                  "example": "Store Name"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "123 Main St"
+                },
+                "phone": {
+                  "type": "string",
+                  "example": "123-456-7890"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "store@example.com"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "closed"
+                  ],
+                  "example": "open"
+                }
               },
-              "required": ["name", "address", "phone", "email", "status"]
+              "required": [
+                "name",
+                "address",
+                "phone",
+                "email",
+                "status"
+              ]
             }
           }
         ],
@@ -125,11 +164,25 @@
             "schema": {
               "type": "object",
               "properties": {
-                "name": { "type": "string" },
-                "address": { "type": "string" },
-                "phone": { "type": "string" },
-                "email": { "type": "string" },
-                "status": { "type": "string", "enum": ["open", "closed"] }
+                "name": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "closed"
+                  ]
+                }
               }
             }
           },
@@ -165,13 +218,38 @@
             "schema": {
               "type": "object",
               "properties": {
-                "name": { "type": "string", "example": "Store Name" },
-                "address": { "type": "string", "example": "123 Main St" },
-                "phone": { "type": "string", "example": "123-456-7890" },
-                "email": { "type": "string", "example": "store@example.com" },
-                "status": { "type": "string", "enum": ["open", "closed"], "example": "open" }
+                "name": {
+                  "type": "string",
+                  "example": "Store Name"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "123 Main St"
+                },
+                "phone": {
+                  "type": "string",
+                  "example": "123-456-7890"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "store@example.com"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "closed"
+                  ],
+                  "example": "open"
+                }
               },
-              "required": ["name", "address", "phone", "email", "status"]
+              "required": [
+                "name",
+                "address",
+                "phone",
+                "email",
+                "status"
+              ]
             }
           }
         ],
@@ -255,12 +333,34 @@
             "schema": {
               "type": "object",
               "properties": {
-                "name": { "type": "string", "example": "John" },
-                "last_name": { "type": "string", "example": "Doe" },
-                "email": { "type": "string", "example": "john.doe@example.com" },
-                "role": { "type": "string", "enum": ["admin", "customer", "manager"], "example": "customer" }
+                "name": {
+                  "type": "string",
+                  "example": "John"
+                },
+                "last_name": {
+                  "type": "string",
+                  "example": "Doe"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "john.doe@example.com"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "admin",
+                    "customer",
+                    "manager"
+                  ],
+                  "example": "customer"
+                }
               },
-              "required": ["name", "last_name", "email", "role"]
+              "required": [
+                "name",
+                "last_name",
+                "email",
+                "role"
+              ]
             }
           }
         ],
@@ -328,12 +428,34 @@
             "schema": {
               "type": "object",
               "properties": {
-                "name": { "type": "string", "example": "John" },
-                "last_name": { "type": "string", "example": "Doe" },
-                "email": { "type": "string", "example": "john.doe@example.com" },
-                "role": { "type": "string", "enum": ["admin", "customer", "manager"], "example": "customer" }
+                "name": {
+                  "type": "string",
+                  "example": "John"
+                },
+                "last_name": {
+                  "type": "string",
+                  "example": "Doe"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "john.doe@example.com"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "admin",
+                    "customer",
+                    "manager"
+                  ],
+                  "example": "customer"
+                }
               },
-              "required": ["name", "last_name", "email", "role"]
+              "required": [
+                "name",
+                "last_name",
+                "email",
+                "role"
+              ]
             }
           }
         ],
@@ -414,13 +536,49 @@
             "schema": {
               "type": "object",
               "properties": {
-                "name": { "type": "string", "example": "Product Name" },
-                "stock": { "type": "integer", "example": 100 },
-                "description": { "type": "string", "example": "Product Description" },
-                "brand": { "type": "string", "example": "Brand Name" },
-                "category": { "type": "string", "example": "Category Name" }
+                "store_id": {
+                  "type": "string",
+                  "example": "store_id"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Example Product"
+                },
+                "stock": {
+                  "type": "integer",
+                  "example": 10
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Product Description"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "example": "10/10/2000"
+                },
+                "brand": {
+                  "type": "string",
+                  "example": "Example Brand"
+                },
+                "category": {
+                  "type": "string",
+                  "example": "Category Name"
+                },
+                "price": {
+                  "type": "number",
+                  "example": 100.00
+                }
               },
-              "required": ["name", "stock", "description", "brand", "category"]
+              "required": [
+                "store_id",
+                "name",
+                "stock",
+                "description",
+                "updated_at",
+                "brand",
+                "category",
+                "price"
+              ]
             }
           }
         ],
@@ -448,7 +606,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Unique identifier of the product.",
+            "description": "Unique ID of the product.",
             "type": "string"
           }
         ],
@@ -474,7 +632,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Unique identifier of the product.",
+            "description": "ID of the product.",
             "type": "string"
           },
           {
@@ -485,12 +643,49 @@
             "schema": {
               "type": "object",
               "properties": {
-                "name": { "type": "string", "example": "Product Name" },
-                "stock": { "type": "integer", "example": 100 },
-                "description": { "type": "string", "example": "Product Description" },
-                "brand": { "type": "string", "example": "Brand Name" },
-                "category": { "type": "string", "example": "Category Name" }
-              }
+                "store_id": {
+                  "type": "string",
+                  "example": "store_id"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Example Product"
+                },
+                "stock": {
+                  "type": "integer",
+                  "example": 10
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Product Description"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "example": "10/10/2000"
+                },
+                "brand": {
+                  "type": "string",
+                  "example": "Example Brand"
+                },
+                "category": {
+                  "type": "string",
+                  "example": "Category Name"
+                },
+                "price": {
+                  "type": "number",
+                  "example": 100.00
+                }
+              },
+              "required": [
+                "store_id",
+                "name",
+                "stock",
+                "description",
+                "updated_at",
+                "brand",
+                "category",
+                "price"
+              ]
             }
           }
         ],
@@ -516,7 +711,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "Unique identifier of the product.",
+            "description": "ID of the product.",
             "type": "string"
           }
         ],
@@ -526,6 +721,39 @@
           },
           "404": {
             "description": "Product not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/products/store/{id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "description": "Get all the products from a Store ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
@@ -562,19 +790,31 @@
             "schema": {
               "type": "object",
               "properties": {
-                "user_id": { "type": "string", "example": "User ID" },
+                "user_id": {
+                  "type": "string",
+                  "example": "User ID"
+                },
                 "items": {
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
-                      "product_id": { "type": "string", "example": "Product ID" },
-                      "quantity": { "type": "integer", "example": 1 }
+                      "product_id": {
+                        "type": "string",
+                        "example": "Product ID"
+                      },
+                      "quantity": {
+                        "type": "integer",
+                        "example": 1
+                      }
                     }
                   }
                 }
               },
-              "required": ["user_id", "items"]
+              "required": [
+                "user_id",
+                "items"
+              ]
             }
           }
         ],
@@ -703,11 +943,23 @@
             "schema": {
               "type": "object",
               "properties": {
-                "user_id": { "type": "string", "example": "any" },
-                "amount": { "type": "number", "example": 100.0 },
-                "status": { "type": "string", "example": "any" }
+                "user_id": {
+                  "type": "string",
+                  "example": "any"
+                },
+                "amount": {
+                  "type": "number",
+                  "example": 100.0
+                },
+                "status": {
+                  "type": "string",
+                  "example": "any"
+                }
               },
-              "required": ["amount", "cart_id"]
+              "required": [
+                "amount",
+                "cart_id"
+              ]
             }
           }
         ],
@@ -773,9 +1025,18 @@
             "schema": {
               "type": "object",
               "properties": {
-                "user_id": { "type": "string", "example": "any" },
-                "amount": { "type": "number", "example": 100.0 },
-                "status": { "type": "string", "example": "any" }
+                "user_id": {
+                  "type": "string",
+                  "example": "any"
+                },
+                "amount": {
+                  "type": "number",
+                  "example": 100.0
+                },
+                "status": {
+                  "type": "string",
+                  "example": "any"
+                }
               }
             }
           }
