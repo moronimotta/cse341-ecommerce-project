@@ -11,9 +11,9 @@ router.delete('/:id', prodController.deleteProd);
 router.put('/:id', prodController.updateProd);
 
 // TODO: get all products according to user store_id. In Ntfy, make it send separetly to each store_topic
-router.get('/get/low-stock', prodController.getLowStock);
+router.get('/store/:id', prodController.getAllProductsByStoreId);
+router.get('/get/low-stock', prodController.getLowStock); //I didn't change this one, not sure if we are working on it or not
 
-// TODO: get all products according to user store_id 
 module.exports = router;
 
  
