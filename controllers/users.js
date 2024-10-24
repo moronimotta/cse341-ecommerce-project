@@ -57,18 +57,18 @@ const updateUser = async (req, res, next) => {
     const id = req.params.id;
     const user = req.body;
 
-    if(user.store_id) {
+    if (user.store_id) {
       const input = { params: { id: user.store_id, validation: true } };
 
       const store = await storeController.getStore(input, res, next);
       if (!store) {
-        return res.status(400).json({ message: 'Store not found' });  
+        return res.status(400).json({ message: 'Store not found' });
       }
     }
 
-  
+
     const userToUpdate = await collection.findOne({ _id: new ObjectId(id) });
-    if(req.session.user.role === 'customer' && userToUpdate._id !== req.session.user._id) {
+    if (req.session.user.role === 'customer' && userToUpdate._id !== req.session.user._id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
     if (req.session.user.role === 'manager' && userToUpdate.store_id !== req.session.user.store_id) {
@@ -93,10 +93,10 @@ const createUser = async (req, res, next) => {
   const database = await mongodb.getDb();
   const collection = await database.collection('users');
   let user = req.body;
-  
-  if(req.session.user !== undefined) {
-    if(req.session.user.role !== 'admin') {
-      if(req.session.user.store_id !== user.store_id) {
+
+  if (req.session.user !== undefined) {
+    if (req.session.user.role !== 'admin') {
+      if (req.session.user.store_id !== user.store_id) {
         return res.status(403).json({ message: 'Forbidden' });
       }
     }
@@ -109,19 +109,29 @@ const createUser = async (req, res, next) => {
 
         const store = await storeController.getStore(input, res, next);
         if (!store) {
-          return res.status(400).json({ message: 'Store not found' });  
+          return res.status(400).json({ message: 'Store not found' });
         }
       }
 
       const newUser = new User(user);
       await newUser.validate();
     }
-    
+
     if (!user.role) {
       user.role = 'customer';
+    } else {
+      if ((user.role === 'manager' || user.role === 'admin') && (req.session.user.role !== 'admin' || req.session.user.role !== 'manager')) {
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+      if (req.session.user.role === 'manager') {
+        if (user.role === 'admin') {
+          return res.status(403).json({ message: 'Forbidden' });
+        }
+      }
+
     }
 
-    if(user.api_key === undefined) {
+    if (user.api_key === undefined) {
       user.api_key = uuidv4();
     }
 
@@ -137,7 +147,7 @@ const createUser = async (req, res, next) => {
 
     if (response.acknowledged) {
       if (user.github_id) {
-        return output;  
+        return output;
       }
       return res.status(201).json({ message: 'User created successfully' });
     } else {
@@ -163,7 +173,7 @@ const deleteUser = async (req, res, next) => {
 
     const userToDelete = await collection.findOne({ _id: new ObjectId(id) });
 
-    if(req.session.user.role === 'customer' && userToDelete._id !== req.session.user._id) {
+    if (req.session.user.role === 'customer' && userToDelete._id !== req.session.user._id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
     if (req.session.user.role === 'manager' && userToDelete.store_id !== req.session.user.store_id) {
@@ -237,9 +247,9 @@ const getUserByEmailAndPassword = async (email, password) => {
   const collection = await database.collection('users')
   try {
 
-    
-    const user  = await collection.findOne({ email: email, password: password });
-    
+
+    const user = await collection.findOne({ email: email, password: password });
+
     if (!user) {
       return null;
     }
