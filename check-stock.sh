@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# get all the ids from the stores
+# for each id, get the low-stock
+# topic needs to be a variable
+# if is empty the array, do not send the message
+
 URL="https://cse341-ecommerce-project.onrender.com/products/get/low-stock"
 
 response=$(curl --silent --write-out "%{http_code}" --output /dev/null "$URL")

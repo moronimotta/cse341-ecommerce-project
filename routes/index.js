@@ -1,22 +1,130 @@
 const router = require('express').Router();
+const passport = require('passport');
+const usersController = require('../controllers/users');
+const User = require('../models/User');
 
 router.use('/swagger', require('./swagger')); 
 router.use('/users', require('./users'));
 router.use('/products', require('./products'));
 router.use('/cart', require('./cart'));
 router.use('/orders', require('./orders'));
-router.use('/store', require('./stores'));
+router.use('/stores', require('./stores'));
 
 router.get('/', (req, res) => {
-  res.send('Welcome to the CSE 341 Final Project API');
+   if (req.session.user !== undefined) {
+    res.send(`Welcome, ${req.session.user.name}!`);
+  }else {
+    res.send('Please log in to continue.');
+  }
 });
 
 router.get('/healthcheck', (req, res) => {
   res.send('OK');
 });
 
+router.get('/login', passport.authenticate('github'));
 
-// TODO: Login and Logout routes using passport.js
+router.get('/auth/github/callback', 
+  passport.authenticate('github', { failureRedirect: '/login', session: false }),
+  async (req, res, next) => { 
+    try {
+      let user = await usersController.getUserByGithubId(req.user.id);
+      
+      if (!user) {
+        const userData = {
+          github_id: req.user.id, 
+        };
+        req.body = userData;
+        const newUserId = await usersController.createUser(req, res, next);  
 
+        res.status(200).send(`
+          <html>
+        <body>
+          <p>Please finish the registration. Here is your user_id: ${JSON.stringify(newUserId)}</p>
+          <p>You will be logged out in <span id="countdown">5</span> seconds.</p>
+          <script>
+            let countdown = 5;
+            const countdownElement = document.getElementById('countdown');
+            const interval = setInterval(() => {
+              countdown--;
+              countdownElement.textContent = countdown;
+              if (countdown === 0) {
+                clearInterval(interval);
+                window.location.href = '/logout';
+              }
+            }, 1000);
+          </script>
+        </body>
+      </html>
+        `);
+
+      } else {
+        // user needs to finish registration
+        try{
+          const dbUser = new User(user);
+          await dbUser.validate()
+
+        }catch (err) {
+          const errorMessages = Object.values(err.errors).map(error => {
+            return `${error.path}: ${error.message}`;
+          });
+        
+          const formattedErrors = errorMessages.join(', ');
+        
+          return res.status(404).send(`
+            <html>
+              <body>
+                <h1>Registration Incomplete</h1>
+                <p>Please finish filling the other fields to complete the registration:</p>
+                <ul>
+                  <li>${formattedErrors}</li>
+                </ul>
+                <p>You will be logged out in <span id="countdown">10</span> seconds.</p>
+                <script>
+                  let countdown = 10; // Countdown starting from 5 seconds
+                  const countdownElement = document.getElementById('countdown');
+                  const interval = setInterval(() => {
+                    countdown--;
+                    countdownElement.textContent = countdown;
+                    if (countdown === 0) {
+                      clearInterval(interval);
+                      window.location.href = '/logout';
+                    }
+                  }, 1000);
+                </script>
+              </body>
+            </html>
+          `);
+        }
+        req.session.user = user;
+        console.log('User logged in:', user);
+        return res.redirect('/');
+      }
+    } catch (error) {
+      console.error('Error in /auth/github/callback:', error);
+      next(error); 
+    }
+  }
+);
+
+router.get('/logout', (req, res, next) => {
+  req.logout(function (err) {
+    if (err) { 
+      console.error('Error during logout:', err);
+      return next(err); 
+    }
+
+    req.session.destroy(err => {
+      if (err) { 
+        console.error('Error destroying session during logout:', err);
+        return next(err); 
+      }
+
+      res.clearCookie('connect.sid', { path: '/' }); // Clear the session cookie
+      console.error('User logged out and session destroyed.');
+      res.redirect('/');
+    });
+  });
+});
 
 module.exports = router;

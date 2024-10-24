@@ -34,13 +34,16 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    // store_id: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Store',
-    //     required: true,
-    // },
+    store_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+    },
+    github_id: {
+        type: String,
+        default: null,
+    },
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('users', userSchema);
 
 module.exports = User;
