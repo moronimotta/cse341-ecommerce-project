@@ -345,6 +345,9 @@
                   "type": "string",
                   "example": "john.doe@example.com"
                 },
+                "store_id": {
+                  "type": "string"
+                },
                 "role": {
                   "type": "string",
                   "enum": [
@@ -359,7 +362,8 @@
                 "name",
                 "last_name",
                 "email",
-                "role"
+                "role",
+                "store_id"
               ]
             }
           }

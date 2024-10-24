@@ -17,8 +17,11 @@ const getStore = async (req, res, next) => {
     const result = await db.collection(storeCollection).find({ _id: new ObjectId(id) });
     const stores = await result.toArray();
 
+    if(req.params.validation){
+      return
+    }
     res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(stores[0]);
+    res.status(200).json(stores[0]); 
   } catch (err) {
     throw res.json(createError(500, err.message));
   }

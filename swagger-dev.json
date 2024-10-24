@@ -32,12 +32,12 @@
       "description": "Operations related to orders"
     }
   ],
-  "paths": { 
+  "paths": {
     "/stores/": {
       "get": {
         "tags": [
-        "Stores"
-      ],
+          "Stores"
+        ],
         "description": "",
         "produces": [
           "application/json"
@@ -50,8 +50,8 @@
       },
       "post": {
         "tags": [
-        "Stores"
-      ],
+          "Stores"
+        ],
         "description": "",
         "produces": [
           "application/json"
@@ -82,11 +82,20 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": ["open", "closed"],
+                  "enum": [
+                    "open",
+                    "closed"
+                  ],
                   "example": "open"
                 }
               },
-              "required": ["name", "address", "phone", "email", "status"]
+              "required": [
+                "name",
+                "address",
+                "phone",
+                "email",
+                "status"
+              ]
             }
           }
         ],
@@ -103,8 +112,8 @@
     "/stores/{id}": {
       "get": {
         "tags": [
-        "Stores"
-      ],
+          "Stores"
+        ],
         "description": "",
         "produces": [
           "application/json"
@@ -125,8 +134,8 @@
       },
       "put": {
         "tags": [
-        "Stores"
-      ],
+          "Stores"
+        ],
         "description": "",
         "produces": [
           "application/json"
@@ -163,11 +172,20 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": ["open", "closed"],
+                  "enum": [
+                    "open",
+                    "closed"
+                  ],
                   "example": "open"
                 }
               },
-              "required": ["name", "address", "phone", "email", "status"]
+              "required": [
+                "name",
+                "address",
+                "phone",
+                "email",
+                "status"
+              ]
             }
           }
         ],
@@ -182,8 +200,8 @@
       },
       "delete": {
         "tags": [
-        "Stores"
-      ],
+          "Stores"
+        ],
         "description": "",
         "produces": [
           "application/json"
@@ -249,13 +267,26 @@
                   "type": "string",
                   "example": "john.doe@example.com"
                 },
+                "store_id": {
+                  "type": "string"
+                },
                 "role": {
                   "type": "string",
-                  "enum": ["admin", "customer", "manager"],
+                  "enum": [
+                    "admin",
+                    "customer",
+                    "manager"
+                  ],
                   "example": "customer"
                 }
               },
-              "required": ["name", "last_name", "email", "role"]
+              "required": [
+                "name",
+                "last_name",
+                "email",
+                "role",
+                "store_id"
+              ]
             }
           }
         ],
@@ -272,8 +303,8 @@
     "/users/{id}": {
       "get": {
         "tags": [
-        "Users"
-      ],
+          "Users"
+        ],
         "description": "",
         "produces": [
           "application/json"
@@ -294,8 +325,8 @@
       },
       "put": {
         "tags": [
-        "Users"
-      ],
+          "Users"
+        ],
         "description": "",
         "produces": [
           "application/json"
@@ -328,11 +359,20 @@
                 },
                 "role": {
                   "type": "string",
-                  "enum": ["admin", "customer", "manager"],
+                  "enum": [
+                    "admin",
+                    "customer",
+                    "manager"
+                  ],
                   "example": "customer"
                 }
               },
-              "required": ["name", "last_name", "email", "role"]
+              "required": [
+                "name",
+                "last_name",
+                "email",
+                "role"
+              ]
             }
           }
         ],
@@ -350,8 +390,8 @@
       },
       "delete": {
         "tags": [
-        "Users"
-      ],
+          "Users"
+        ],
         "description": "",
         "produces": [
           "application/json"
@@ -441,7 +481,13 @@
                   "example": "Category Name"
                 }
               },
-              "required": ["name", "stock", "description", "brand", "category"]
+              "required": [
+                "name",
+                "stock",
+                "description",
+                "brand",
+                "category"
+              ]
             }
           }
         ],
@@ -559,7 +605,13 @@
                   "example": "Updated Category Name"
                 }
               },
-              "required": ["name", "stock", "description", "brand", "category"]
+              "required": [
+                "name",
+                "stock",
+                "description",
+                "brand",
+                "category"
+              ]
             }
           }
         ],
@@ -611,11 +663,10 @@
       }
     },
     "/cart/": {
-      
       "get": {
         "tags": [
-        "Cart"
-      ],
+          "Cart"
+        ],
         "description": "",
         "responses": {
           "200": {
@@ -628,8 +679,8 @@
       },
       "post": {
         "tags": [
-        "Cart"
-      ],
+          "Cart"
+        ],
         "description": "",
         "parameters": [
           {
@@ -660,7 +711,10 @@
                   }
                 }
               },
-              "required": ["user_id", "items"]
+              "required": [
+                "user_id",
+                "items"
+              ]
             }
           }
         ],
@@ -677,8 +731,8 @@
     "/cart/{id}": {
       "get": {
         "tags": [
-        "Cart"
-      ],
+          "Cart"
+        ],
         "description": "",
         "parameters": [
           {
@@ -702,8 +756,8 @@
       },
       "put": {
         "tags": [
-        "Cart"
-      ],
+          "Cart"
+        ],
         "description": "",
         "parameters": [
           {
@@ -727,8 +781,8 @@
       },
       "delete": {
         "tags": [
-        "Cart"
-      ],
+          "Cart"
+        ],
         "description": "",
         "parameters": [
           {
@@ -754,8 +808,8 @@
     "/cart/{id}/total": {
       "get": {
         "tags": [
-        "Cart"
-      ],
+          "Cart"
+        ],
         "description": "",
         "parameters": [
           {
@@ -781,8 +835,8 @@
     "/orders/": {
       "get": {
         "tags": [
-        "Orders"
-      ],
+          "Orders"
+        ],
         "description": "",
         "produces": [
           "application/json"
@@ -798,8 +852,8 @@
       },
       "post": {
         "tags": [
-        "Orders"
-      ],
+          "Orders"
+        ],
         "description": "",
         "parameters": [
           {
@@ -830,7 +884,10 @@
                   "example": "any"
                 }
               },
-              "required": ["amount", "cart_id"]
+              "required": [
+                "amount",
+                "cart_id"
+              ]
             }
           }
         ],
@@ -850,8 +907,8 @@
     "/orders/{id}": {
       "get": {
         "tags": [
-        "Orders"
-      ],
+          "Orders"
+        ],
         "description": "",
         "produces": [
           "application/json"
@@ -878,8 +935,8 @@
       },
       "put": {
         "tags": [
-        "Orders"
-      ],
+          "Orders"
+        ],
         "description": "",
         "parameters": [
           {
@@ -938,8 +995,8 @@
       },
       "delete": {
         "tags": [
-        "Orders"
-      ],
+          "Orders"
+        ],
         "description": "",
         "parameters": [
           {
@@ -961,139 +1018,6 @@
           },
           "500": {
             "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/store/": {
-      "get": {
-        "tags": [
-        "Stores"
-      ],
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Stores"
-        ],
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "api_key": {
-                  "example": "any"
-                },
-                "created_at": {
-                  "example": "any"
-                },
-                "status": {
-                  "example": "any"
-                },
-                "name": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/store/{id}": {
-      "get": {
-        "tags": [
-          "Stores"
-        ],
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Stores"
-        ],
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Stores"
-        ],
-        "description": "",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "204": {
-            "description": "No Content"
           }
         }
       }

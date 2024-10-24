@@ -2,6 +2,7 @@ const mongodb = require('../data/database.js');
 const sendNotification = require('../tools/ntfy');
 const ObjectId = require ('mongodb').ObjectId;
 const Product = require('../models/Products');
+const storeController = require('./stores');
 
 //Get all products
 const getAllProd = async (req, res) => {
@@ -46,6 +47,12 @@ const createProd = async (req,res)=>{
     const collection = await database.collection('products')
   
     try {
+      if (product.store_id) {
+        const store = await storeController.getStore(product.store_id);
+        if (!store) {
+          return res.status(400).json({ message: 'Store not found' });
+        }
+      }
       const newProduct = new Product(product);
       await newProduct.validate();
 

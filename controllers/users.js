@@ -2,6 +2,7 @@ const mongodb = require('../data/database');
 const dotenv = require('dotenv');
 const sendNotification = require('../tools/ntfy');
 const User = require('../models/User');
+const storeController = require('./stores');
 
 
 dotenv.config();
@@ -67,12 +68,23 @@ const updateUser = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   const database = await mongodb.getDb();
-  const collection = await database.collection('users')
+  const collection = await database.collection('users');
   let user = req.body;
+  
   try {
+    if (!user.github_id) {
+      if (user.store_id) {
+        const input = { params: { id: user.store_id, validation: true } };
 
-    const newUser = new User(user);
-    await newUser.validate();
+        const store = await storeController.getStore(input, res, next);
+        if (!store) {
+          return;  
+        }
+      }
+
+      const newUser = new User(user);
+      await newUser.validate();
+    }
 
     if (!user.role) {
       user.role = 'customer';
@@ -81,24 +93,31 @@ const createUser = async (req, res, next) => {
     user.active = true;
 
     const response = await collection.insertOne(user);
+    const output = response.insertedId.toString();
 
     if (response.acknowledged) {
-      res.status(201).json({ message: 'User created successfully' });
+      if (user.github_id) {
+        return output;  
+      }
+      return res.status(201).json({ message: 'User created successfully' });
     } else {
       throw new Error('An error occurred while creating the order');
     }
 
   } catch (err) {
     sendNotification(err, 'system_error');
-    res.status(500).json({ message: 'Internal server error', error: err.message });
+    if (!res.headersSent) {
+      return res.status(500).json({ message: 'Internal server error', error: err.message });
+    }
   }
 };
 
 
 
+
 const deleteUser = async (req, res, next) => {
   const database = await mongodb.getDb();
-const collection = await database.collection('users')
+  const collection = await database.collection('users')
   try {
     const id = req.params.id;
 
@@ -116,6 +135,22 @@ const collection = await database.collection('users')
 };
 
 
+const getUserByGithubId = async (id) => {
+  const database = await mongodb.getDb();
+  const collection = await database.collection('users')
+  try {
+
+    const user = await collection.findOne({ github_id: id });
+
+    if (!user) {
+      return null;
+    }
+    return user;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
 // TODO: Get user by api key
 
 module.exports = {
@@ -124,4 +159,5 @@ module.exports = {
   updateUser,
   createUser,
   deleteUser,
+  getUserByGithubId
 };
