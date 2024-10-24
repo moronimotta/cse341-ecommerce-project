@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cart');
+const sendNotification = require('../tools/ntfy')
 
 // Admins
 router.get('/', cartController.getAllCarts);
