@@ -12,12 +12,16 @@
   ],
   "tags": [
     {
-      "name": "Stores",
-      "description": "Operations related to stores"
+      "name": "Login",
+      "description": "Operations related to user login"
     },
     {
       "name": "Users",
       "description": "Operations related to users"
+    },
+    {
+      "name": "Stores",
+      "description": "Operations related to stores"
     },
     {
       "name": "Products",
@@ -31,8 +35,52 @@
       "name": "Orders",
       "description": "Operations related to orders"
     }
+    
   ],
   "paths": {
+    "/login": {
+      "get": {
+        "tags": [
+          "Login"
+        ],
+        "description": "User login",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "header",
+            "type": "string",
+            "description": "User's email address",
+            "example": "user@example.com"
+          },
+          {
+            "name": "password",
+            "in": "header",
+            "type": "string",
+            "description": "User's password",
+            "example": "password123"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": {
+                "token": "jwt-token"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/stores/": {
       "get": {
         "tags": [
@@ -233,6 +281,15 @@
         "produces": [
           "application/json"
         ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token for authentication"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -267,6 +324,10 @@
                   "type": "string",
                   "example": "john.doe@example.com"
                 },
+                "password": {
+                  "type": "string",
+                  "example": "123password"
+                },
                 "store_id": {
                   "type": "string"
                 },
@@ -285,7 +346,8 @@
                 "last_name",
                 "email",
                 "role",
-                "store_id"
+                "store_id",
+                "password"
               ]
             }
           }
@@ -311,6 +373,13 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token for authentication"
+          },
+          {
             "name": "id",
             "in": "path",
             "required": true,
@@ -332,6 +401,13 @@
           "application/json"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token for authentication"
+          },
           {
             "name": "id",
             "in": "path",
@@ -357,6 +433,10 @@
                   "type": "string",
                   "example": "john.doe@example.com"
                 },
+                "password": {
+                  "type": "string",
+                  "example": "123password"
+                },
                 "role": {
                   "type": "string",
                   "enum": [
@@ -371,7 +451,8 @@
                 "name",
                 "last_name",
                 "email",
-                "role"
+                "role",
+                "password"
               ]
             }
           }
@@ -397,6 +478,13 @@
           "application/json"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token for authentication"
+          },
           {
             "name": "id",
             "in": "path",

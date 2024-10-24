@@ -132,5 +132,31 @@ const getSingleOrder = async (req, res) => {
       res.status(500).json({ error: error.message || 'An unknown error occurred' });
     }
   };
+
+  const getAllOrdersByStoreId = async (req, res) => {
+    try {
+      const database = await mongodb.getDb();
+      const response = await database.collection('orders').find({ store_id: req.params.id }).toArray();
   
-  module.exports = {getAllOrders, getSingleOrder, createOrder, updateOrder, deleteOrder}
+      res.setHeader('Content-Type', 'application/json');
+      res.status(200).json(response);
+    } catch (error) {
+      sendNotification(error, 'system_error');
+      res.status(500).json({ message: error.message || 'An error occurred while fetching the order.' });
+    }
+  };
+
+  const getAllOrdersByUserId = async (req, res) => {
+    try {
+      const database = await mongodb.getDb();
+      const response = await database.collection('orders').find({ user_id: req.params.id }).toArray();
+  
+      res.setHeader('Content-Type', 'application/json');
+      res.status(200).json(response);
+    } catch (error) {
+      sendNotification(error, 'system_error');
+      res.status(500).json({ message: error.message || 'An error occurred while fetching the order.' });
+    }
+  }
+  
+  module.exports = {getAllOrders, getSingleOrder, createOrder, updateOrder, deleteOrder, getAllOrdersByStoreId, getAllOrdersByUserId};

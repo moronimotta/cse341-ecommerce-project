@@ -53,6 +53,11 @@ const createProd = async (req,res)=>{
           return res.status(400).json({ message: 'Store not found' });
         }
       }
+
+      if(req.session.user.store_id === 'manager' && req.session.user.store_id !== product.store_id){
+        return res.status(403).json({ message: 'Forbidden' });
+      }
+
       const newProduct = new Product(product);
       await newProduct.validate();
 
@@ -91,6 +96,11 @@ const updateProd = async (req, res) => {
 
     delete productUpdates._id; //This prevents the 'inmutable _id' error from mongodb
 
+    const productToUpdate = await collection.findOne({ _id: new ObjectId(id) });
+    if (req.session.user.role === 'manager' && productToUpdate.store_id !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
     const response = await collection.updateOne({ _id: productId },{ $set: productUpdates });
 
     if (response.modifiedCount > 0) {
@@ -120,6 +130,12 @@ const deleteProd = async (req, res) => {
     const prodId = new ObjectId(req.params.id);
     const database = await mongodb.getDb();
     const response = await database.collection('products').deleteOne({ _id: prodId });
+
+    const productToDelete = await collection.findOne({ _id: new ObjectId(id) });
+    if (req.session.user.role === 'manager' && productToDelete.store_id !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
 
     if (response.deletedCount > 0) {
       res.status(204).send();

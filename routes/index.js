@@ -22,7 +22,35 @@ router.get('/healthcheck', (req, res) => {
   res.send('OK');
 });
 
-router.get('/login', passport.authenticate('github'));
+router.get('/login',
+  async (req, res, next) => {
+
+    if(req.session.user !== undefined) {
+      return res.redirect('/');
+    }
+
+    const email = req.headers.email;
+    const password = req.headers.password;
+
+    if (email && password) {
+      try {
+        let user = await usersController.getUserByEmailAndPassword(email, password);
+        if (!user) {
+          return res.status(404).send('User not found / Incorrect password');
+        }
+      
+        req.session.user = user;
+        console.log('User logged in:', user);
+        return res.redirect('/');
+      } catch (error) {
+        console.error('Error in /login', error);
+        next(error);
+      }
+    } else {
+      return passport.authenticate('github')(req, res, next);
+    }
+  }
+  );
 
 router.get('/auth/github/callback', 
   passport.authenticate('github', { failureRedirect: '/login', session: false }),

@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
+    password: {
+        type: String,
+        required: true,
+    },
     github_id: {
         type: String,
         default: null,
