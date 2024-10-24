@@ -52,6 +52,15 @@ const updateUser = async (req, res, next) => {
     const id = req.params.id;
     const user = req.body;
 
+    if(user.store_id) {
+      const input = { params: { id: user.store_id, validation: true } };
+
+      const store = await storeController.getStore(input, res, next);
+      if (!store) {
+        return res.status(400).json({ message: 'Store not found' });  
+      }
+    }
+
     const updatedUser = collection.findOneAndUpdate({ _id: new ObjectId(id) }, { $set: user });
 
     if (!updatedUser) {
