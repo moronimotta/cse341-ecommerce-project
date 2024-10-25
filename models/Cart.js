@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
 
 const cartSchema = new mongoose.Schema({
-  userId: {
+  user_id: {
     type: String,
-    required: [true, 'User ID is required'],
+    
+  },
+  store_id: {
+    type: String, // Add id_store like string and not required
   },
   items: [
     {
-      productId: {
+      product_id: {
         type: String,
         required: [true, 'Product ID is required'],
       },
@@ -22,7 +25,7 @@ const cartSchema = new mongoose.Schema({
       }
     }
   ],
-  totalPrice: {
+  total_price: {
     type: Number,
     default: 0,
   }

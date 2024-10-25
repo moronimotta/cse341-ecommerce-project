@@ -46,39 +46,55 @@ const getCartById = async (req, res) => {
   }
 };
 
-// Create a new cart
-const createCart = async (req, res) => {
-  const { userId, items, totalPrice } = req.body;
-
-  if (!userId || !items || !Array.isArray(items)) {
-    return res.status(400).json({ message: 'Invalid cart data' });
-  }
-
-  const cartData = {
-    userId,
-    items,
-    totalPrice: totalPrice || 0, 
-  };
+const getCartsByStoreId = async (req, res) => {
+  const { store_id } = req.params;
 
   try {
-    const cart = new Cart(cartData);
-    await cart.validate(); // Esto puede ser opcional dependiendo de cómo quieras manejar la validación
+    const database = await mongodb.getDb();
+    const carts = await database.collection('carts').find({ store_id }).toArray();
 
-    const database = await mongodb.getDb(); 
-    const response = await database.collection('carts').insertOne(cartData);
+    if (carts.length === 0) {
+      return res.status(404).json({ message: 'No carts found the specified store' });
+    }
 
-    if (response.acknowledged) {
-      res.status(201).json({ message: 'Cart created successfully', cartId: response.insertedId });
-    } else {
-      throw new Error('An error occurred while creating the cart');
-    }
-  } catch (error) {
-    if (error.name === 'ValidationError') {
-      res.status(400).json({ error: error.message });
-    } else {
-      console.error(error);
-      res.status(500).json({ error: error.message || 'An unknown error occurred' });
-    }
+    res.json(carts);
+  } catch (err) {
+    sendNotification(err, 'system_error');
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Create a new cart
+const createCart = async (req, res) => {
+  const { cartData } = req.body;
+
+  try {
+    const database = await mongodb.getDb();
+
+    // Calculate the total price based in the cart items
+    let total_price = 0;
+    cartData.items.forEach(item => {
+      total_price += item.price * item.quantity;
+    });
+
+    // setting user_id and store_id using the session values
+    const user_id = req.session.user._id;
+    const store_id = req.session.user.store_id;
+
+    // create the cart object with the properties name updated
+    const newCart = {
+      user_id,
+      store_id,
+      total_price,
+      items: cartData.items
+    };
+
+    const result = await database.collection('carts').insertOne(newCart);
+    res.status(201).json({ message: 'Cart created successfully', cartId: result.insertedId });
+  
+  } catch (err) {
+    sendNotification(err, 'system_error');
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -173,6 +189,7 @@ const getCartTotal = async (req, res) => {
 module.exports = {
   getAllCarts,
   getCartById,
+  getCartsByStoreId,
   createCart,
   updateCart,
   deleteCart,
