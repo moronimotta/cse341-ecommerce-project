@@ -1,35 +1,63 @@
-// User:
+const dotenv = require('dotenv');
+dotenv.config();
 
-// He's logged in.
-
-// He needs to insert the api_key in the header.
-
-// Create a middleware that validates if user_id belongs to that api_key (if is admin, never mind) (if is manager and store_id is the same, OK)
-
-// In the authorizationChecker:
-
-// sees the req.session.user.role
-// if is admin -> return OK
-
-// if is manager -> check if the info he is trying to access belongs to the same store_id.
-// req.session.user.store_id == (product store_id or user store_id, cart...)
-
-// if is user -> check if the info belongs to him.
-
-const authorizationChecker = (req, res, next) => {
-    if (req.session.user.role === 'admin') {
-        next();
-    } else if (req.session.user.role === 'manager') {
-        if (req.session.user.store_id === req.body.store_id) {
-            next();
-        } else {
-            res.status(403).send('Forbidden');
+const authorizationChecker = (lvl = 'admin') => {
+    return async (req, res, next) => {
+        if (process.env.AUTH !== 'true') {
+            return next();
         }
-    } else if (req.session.user.role === 'user') {
-        if (req.session.user.id === req.body.user_id) {
-            next();
-        } else {
-            res.status(403).send('Forbidden');
+
+        if (!req.session.user) {
+            return res.status(401).json({ message: 'Unauthorized: Not logged in' });
         }
-    }
-}
+
+        if (!req.headers.authorization) {
+            return res.status(401).json({ message: 'Unauthorized: No API Key' });
+        }
+
+        const apiKey = req.headers.authorization.split(' ')[1];
+
+        if (req.session.user.api_key !== apiKey) {
+            return res.status(401).json({ message: 'Unauthorized: API Key does not match' });
+        }
+
+        switch (lvl) {
+            case 'admin':
+                if (req.session.user.role === 'admin') {
+                    return next();
+                } else {
+                    return res.status(403).json({ message: 'Forbidden' });
+                }
+
+                case 'manager':
+                    if (req.session.user.role === 'admin' || (req.session.user.role === 'manager' && req.body.store_id === undefined && req.params.id === undefined)) {
+                        return next();
+                    }
+                    else if (req.session.user.role === 'manager'
+                        && ((req.session.user.store_id === req.body.store_id && req.body !== undefined) 
+                        || (req.session.user.store_id === req.params.id && req.params !== undefined))) {
+                        return next();
+                    } else {
+                        return res.status(403).json({ message: 'Forbidden' });
+                    }
+                
+                case 'customer':
+                    if (req.session.user.role === 'admin' || req.session.user.role === 'manager') {
+                        return next();
+                    }
+                    else if ((req.session.user.role === 'customer')
+                        && ((req.session.user._id === req.body.user_id && req.body !== undefined) 
+                        || (req.session.user._id === req.params.id && req.params !== undefined))) {
+                        return next();
+                    } else {
+                        return res.status(403).json({ message: 'Forbidden' });
+                    }
+                
+
+            default:
+                return res.status(403).json({ message: 'Forbidden' });
+        }
+    };
+};
+
+module.exports = authorizationChecker;

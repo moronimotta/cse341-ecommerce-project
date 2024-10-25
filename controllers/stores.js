@@ -9,6 +9,8 @@ dotenv.config();
 const storeCollection = 'stores';
 const ObjectId = require('mongodb').ObjectId;
 
+
+// TODO: Jest test
 const getStore = async (req, res, next) => {
   try {
     // swagger-tags=['Stores']
@@ -18,7 +20,7 @@ const getStore = async (req, res, next) => {
     const stores = await result.toArray();
 
     if(req.params.validation){
-      return
+      return stores[0];
     }
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(stores[0]); 
@@ -27,6 +29,7 @@ const getStore = async (req, res, next) => {
   }
 };
 
+// TODO: Jest test
 const getStores = async (req, res, next) => {
   try {
     // swagger-tags=['Stores']
@@ -52,6 +55,12 @@ const updateStore = async (req, res, next) => {
 
     if (stores.length === 0) {
       return res.status(404).json({ message: 'Store not found' });
+    }
+
+    const storeToUpdate = await db.collection(storeCollection).findOne({ _id: new ObjectId(id) });
+
+    if (req.session.user.role === 'manager' && req.session.user.store_id !== storeToUpdate._id.toString()) {
+      return res.status(403).json({ message: 'Forbidden' });
     }
 
     await db.collection(storeCollection).updateOne({ _id: new ObjectId(id) }, { $set: store });
@@ -89,6 +98,12 @@ const deleteStore = async (req, res, next) => {
     let db = mongodb.getDb();
     const id = req.params.id;
     await db.collection(storeCollection).deleteOne({ _id: new ObjectId(id) });
+
+    const storeToDelete = await db.collection(storeCollection).findOne({ _id: new ObjectId(id) });
+
+    if (req.session.user.role === 'manager' && req.session.user.store_id !== storeToDelete._id.toString()) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
 
     res.setHeader('Content-Type', 'application/json');
     res.status(204).send();
