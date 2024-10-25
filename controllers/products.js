@@ -163,13 +163,18 @@ const getAllProductsByStoreId = async (req, res) => {
 //Get low stock
 const getLowStock = async (req, res, next) => {
   try {
+
+    const id = req.params.id;
+
     const db = mongodb.getDb();
     console.log(db);  
   
     // TODO: get user by api key, then check if is manager or admin. If it is, then return all products with low stock and user_id
-    const result = await db.collection('products').find({ stock: { $lt: 20 } }).toArray();
-    console.log(result);  
-
+    const result = await db.collection('products').find({
+      _id: new ObjectId(id),
+      stock: { $lt: 20 }
+    }).toArray();
+    
     if (result.length > 0) {
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json(result); 

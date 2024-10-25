@@ -11,7 +11,7 @@ router.put('/:product_id', authorizationChecker('manager'), prodController.updat
 router.get('/:product_id', authorizationChecker('customer'), prodController.getSingleProd);
 router.get('/store/:id', authorizationChecker('customer'), prodController.getAllProductsByStoreId);
 
-router.get('/get/low-stock', prodController.getLowStock);
+router.get('/store/low-stock/:id', prodController.getLowStock);
 
 module.exports = router;
 
