@@ -3,7 +3,7 @@ const sendNotification = require('../tools/ntfy.js');
 const ObjectId = require('mongodb').ObjectId;
 const Order = require('../models/Orders');
 const storeController = require('./stores');
-
+// TODO: Jest test
 const getAllOrders = async (req, res) => {
   try {
     const database = await mongodb.getDb();
@@ -16,7 +16,7 @@ const getAllOrders = async (req, res) => {
     res.status(500).json({ message: error.message || 'An error occurred while fetching the order.' });
   }
 };
-
+// TODO: Jest test
 const getSingleOrder = async (req, res) => {
     if (!ObjectId.isValid(req.params.id)) {
       res.status(400).json('Must be a valid Order ID to find a order');
@@ -132,7 +132,7 @@ const getSingleOrder = async (req, res) => {
       res.status(500).json({ error: error.message || 'An unknown error occurred' });
     }
   };
-
+// TODO: Jest test
   const getAllOrdersByStoreId = async (req, res) => {
     try {
       const database = await mongodb.getDb();
@@ -145,7 +145,7 @@ const getSingleOrder = async (req, res) => {
       res.status(500).json({ message: error.message || 'An error occurred while fetching the order.' });
     }
   };
-
+// TODO: Jest test
   const getAllOrdersByUserId = async (req, res) => {
     try {
       const database = await mongodb.getDb();

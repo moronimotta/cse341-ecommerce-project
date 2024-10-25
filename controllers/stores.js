@@ -9,6 +9,8 @@ dotenv.config();
 const storeCollection = 'stores';
 const ObjectId = require('mongodb').ObjectId;
 
+
+// TODO: Jest test
 const getStore = async (req, res, next) => {
   try {
     // swagger-tags=['Stores']
@@ -27,6 +29,7 @@ const getStore = async (req, res, next) => {
   }
 };
 
+// TODO: Jest test
 const getStores = async (req, res, next) => {
   try {
     // swagger-tags=['Stores']

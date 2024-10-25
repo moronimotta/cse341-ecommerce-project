@@ -4,7 +4,7 @@ const ObjectId = require ('mongodb').ObjectId;
 const Product = require('../models/Products');
 const storeController = require('./stores');
 
-//Get all products
+// TODO: Jest test
 const getAllProd = async (req, res) => {
   try {
     const database = await mongodb.getDb();
@@ -18,7 +18,7 @@ const getAllProd = async (req, res) => {
   }
 };
 
-//Get a single product
+// TODO: Jest test
 const getSingleProd = async (req, res) => {
   try {
     const database = await mongodb.getDb();
@@ -140,7 +140,7 @@ const deleteProd = async (req, res) => {
   }
 };
 
-//Get all products by store_id
+// TODO: Jest test
 const getAllProductsByStoreId = async (req, res) => {
   const store_id = req.params;
 
@@ -160,7 +160,7 @@ const getAllProductsByStoreId = async (req, res) => {
   }
 };
 
-//Get low stock
+// TODO: Jest test
 const getLowStock = async (req, res, next) => {
   try {
 
@@ -169,7 +169,6 @@ const getLowStock = async (req, res, next) => {
     const db = mongodb.getDb();
     console.log(db);  
   
-    // TODO: get user by api key, then check if is manager or admin. If it is, then return all products with low stock and user_id
     const result = await db.collection('products').find({
       _id: new ObjectId(id),
       stock: { $lt: 20 }

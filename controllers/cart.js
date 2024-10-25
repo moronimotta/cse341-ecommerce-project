@@ -4,7 +4,7 @@ const sendNotification = require('../tools/ntfy');
 const { MongoClient, ObjectId } = require('mongodb');
 
 
-// Get all carts
+// TODO: Jest test
 const getAllCarts = async (req, res) => {
   try {
     const database = await mongodb.getDb();
@@ -16,7 +16,7 @@ const getAllCarts = async (req, res) => {
   }
 };
 
-// Get a cart by ID
+// TODO: Jest test
 const getCartById = async (req, res) => {
   const { id } = req.params;
 

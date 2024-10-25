@@ -11,7 +11,7 @@ dotenv.config();
 const ObjectId = require('mongodb').ObjectId;
 
 
-
+// TODO: Jest test
 const getUser = async (req, res, next) => {
   const database = await mongodb.getDb();
   const collection = await database.collection('users')
@@ -34,7 +34,7 @@ const getUser = async (req, res, next) => {
   }
 };
 
-
+// TODO: Jest test
 const getUsers = async (req, res, next) => {
   const database = await mongodb.getDb();
   const collection = await database.collection('users')
