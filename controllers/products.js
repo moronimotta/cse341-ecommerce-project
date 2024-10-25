@@ -20,25 +20,26 @@ const getAllProd = async (req, res) => {
 
 //Get a single product
 const getSingleProd = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    res.status(400).json('Must be a valid Order ID to find a product');
-  }
-  try { 
-    const productId = new ObjectId(req.params.id);
+  try {
     const database = await mongodb.getDb();
-    const response = await database.collection('products').findOne({ _id: productId });
+    const response = await database.collection('products').findOne({ _id: new ObjectId(req.params.product_id) });
+
+    if (req.session.user.role === 'manager' && response.store_id.toString() !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' }); 
+    }
 
     if (response) {
       res.setHeader('Content-Type', 'application/json');
-      res.status(200).json(response);
+      return res.status(200).json(response); 
     } else {
-      res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: 'Product not found' }); 
     }
   } catch (error) {
     sendNotification(error, 'system_error');
-    res.status(400).json({ message: error.message || 'An unknown error occurred' });
+    return res.status(400).json({ message: error.message || 'An unknown error occurred' }); 
   }
 };
+
 
 //Create a new product
 const createProd = async (req,res)=>{
@@ -47,15 +48,11 @@ const createProd = async (req,res)=>{
     const collection = await database.collection('products')
   
     try {
-      if (product.store_id) {
-        const store = await storeController.getStore(product.store_id);
-        if (!store) {
-          return res.status(400).json({ message: 'Store not found' });
-        }
-      }
-
-      if(req.session.user.store_id === 'manager' && req.session.user.store_id !== product.store_id){
-        return res.status(403).json({ message: 'Forbidden' });
+      
+      if(req.session.user.role !== 'admin' && product.store_id !== undefined){
+        product.store_id = req.session.user.store_id;
+      }else if (product.store_id === undefined){
+        product.store_id = req.session.user.store_id;
       }
 
       const newProduct = new Product(product);
@@ -80,28 +77,22 @@ const createProd = async (req,res)=>{
 
 //Update a product
 const updateProd = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
+  if (!ObjectId.isValid(req.params.product_id)) {
     return res.status(400).json('Must be a valid Product ID to update a product');
   }
 
-  const productId = new ObjectId(req.params.id);
+  const productId = new ObjectId(req.params.product_id);
   const database = await mongodb.getDb();
   const collection = await database.collection('products');
 
   try {
-    const productUpdates = { ...req.body };
-
-    const updatedProduct = new Product(productUpdates);
-    await updatedProduct.validate();
-
-    delete productUpdates._id; //This prevents the 'inmutable _id' error from mongodb
-
-    const productToUpdate = await collection.findOne({ _id: new ObjectId(id) });
-    if (req.session.user.role === 'manager' && productToUpdate.store_id !== req.session.user.store_id) {
+    const productToUpdate = await collection.findOne({ _id: new ObjectId(req.params.product_id) });
+    
+    if (req.session.user.role === 'manager' && productToUpdate.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    const response = await collection.updateOne({ _id: productId },{ $set: productUpdates });
+    const response = await collection.updateOne({ _id: productId }, { $set: req.body });
 
     if (response.modifiedCount > 0) {
       res.status(204).send(); 
@@ -122,20 +113,21 @@ const updateProd = async (req, res) => {
 
 //Delete a product
 const deleteProd = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
+  if (!ObjectId.isValid(req.params.product_id)) {
     return res.status(400).json('Must be a valid Product ID to delete a Product');
   }
 
   try {
-    const prodId = new ObjectId(req.params.id);
+    const prodId = new ObjectId(req.params.product_id);
     const database = await mongodb.getDb();
-    const response = await database.collection('products').deleteOne({ _id: prodId });
-
-    const productToDelete = await collection.findOne({ _id: new ObjectId(id) });
-    if (req.session.user.role === 'manager' && productToDelete.store_id !== req.session.user.store_id) {
+    const collection = await database.collection('products');
+    
+    const productToDelete = await collection.findOne({ _id: prodId });
+    if (req.session.user.role === 'manager' && productToDelete.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
-
+    
+    const response = await database.collection('products').deleteOne({ _id: prodId });
 
     if (response.deletedCount > 0) {
       res.status(204).send();

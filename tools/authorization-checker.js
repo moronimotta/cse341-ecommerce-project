@@ -30,7 +30,7 @@ const authorizationChecker = (lvl = 'admin') => {
                 }
 
                 case 'manager':
-                    if (req.session.user.role === 'admin') {
+                    if (req.session.user.role === 'admin' || (req.session.user.role === 'manager' && req.body.store_id === undefined && req.params.id === undefined)) {
                         return next();
                     }
                     else if (req.session.user.role === 'manager'

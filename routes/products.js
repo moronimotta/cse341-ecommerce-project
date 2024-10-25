@@ -5,10 +5,10 @@ const authorizationChecker = require('../tools/authorization-checker');
 router.get('/', authorizationChecker('admin'), prodController.getAllProd);
 
 router.post('/', authorizationChecker('manager'), prodController.createProd);
-router.delete('/:id', authorizationChecker('manager'), prodController.deleteProd);
-router.put('/:id', authorizationChecker('manager'), prodController.updateProd);
+router.delete('/:product_id', authorizationChecker('manager'), prodController.deleteProd);
+router.put('/:product_id', authorizationChecker('manager'), prodController.updateProd);
 
-router.get('/:id', authorizationChecker('customer'), prodController.getSingleProd);
+router.get('/:product_id', authorizationChecker('customer'), prodController.getSingleProd);
 router.get('/store/:id', authorizationChecker('customer'), prodController.getAllProductsByStoreId);
 
 router.get('/get/low-stock', prodController.getLowStock);

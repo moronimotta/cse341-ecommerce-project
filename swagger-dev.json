@@ -535,6 +535,15 @@
         "produces": [
           "application/json"
         ],
+        "parameters":[
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token for authentication"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -563,6 +572,13 @@
         "description": "Create a new product.",
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token for authentication"
+          },
+          {
             "name": "body",
             "in": "body",
             "required": true,
@@ -585,6 +601,10 @@
                   "type": "string",
                   "example": "Brand Name"
                 },
+                "price": {
+                  "type": "number",
+                  "example": 100.0
+                },
                 "category": {
                   "type": "string",
                   "example": "Category Name"
@@ -595,7 +615,8 @@
                 "stock",
                 "description",
                 "brand",
-                "category"
+                "category",
+                "price"
               ]
             }
           }
@@ -616,42 +637,49 @@
         }
       }
     },
-    "/products/{id}": {
-      "get": {
-        "tags": [
-          "Products"
-        ],
-        "description": "Retrieve a single product by its ID.",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "examples": {
-              "application/json": {
-                "_id": "60c72b2f4f1a4a3d2e75b9d3",
-                "name": "Product Name",
-                "stock": 100,
-                "description": "Product Description",
-                "brand": "Brand Name",
-                "category": "Category Name"
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error"
+    "/products/{product_id}": {  
+  "get": {
+    "tags": [
+      "Products"
+    ],
+    "description": "Retrieve a single product by its ID.",
+    "produces": [
+      "application/json"
+    ],
+    "parameters": [
+      {
+        "name": "Authorization",
+        "in": "header",
+        "required": true,
+        "type": "string",
+        "description": "Bearer token for authentication"
+      },
+      {
+        "name": "product_id", 
+        "in": "path",
+        "required": true,
+        "type": "string"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "examples": {
+          "application/json": {
+            "_id": "60c72b2f4f1a4a3d2e75b9d3",
+            "name": "Product Name",
+            "stock": 100,
+            "description": "Product Description",
+            "brand": "Brand Name",
+            "category": "Category Name"
           }
         }
       },
+      "500": {
+        "description": "Internal Server Error"
+      }
+    }
+  },
       "delete": {
         "tags": [
           "Products"
@@ -659,7 +687,14 @@
         "description": "Delete a product by its ID.",
         "parameters": [
           {
-            "name": "id",
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token for authentication"
+          },
+          {
+            "name": "product_id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -681,7 +716,14 @@
         "description": "Update a product by its ID.",
         "parameters": [
           {
-            "name": "id",
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token for authentication"
+          },
+          {
+            "name": "product_id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -709,18 +751,15 @@
                   "type": "string",
                   "example": "Updated Brand Name"
                 },
+                "price": {
+                  "type": "number",
+                  "example": 100.0
+                },
                 "category": {
                   "type": "string",
                   "example": "Updated Category Name"
                 }
-              },
-              "required": [
-                "name",
-                "stock",
-                "description",
-                "brand",
-                "category"
-              ]
+              }
             }
           }
         ],
