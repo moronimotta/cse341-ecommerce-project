@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const createError = require('http-errors');
 require('dotenv').config();
 
@@ -14,8 +14,8 @@ const initDb = (callback) => {
   MongoClient.connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    connectTimeoutMS: 30000,  
-    socketTimeoutMS: 30000,   
+    connectTimeoutMS: 60000,  
+    socketTimeoutMS: 60000,   
   })
     .then((client) => {
       _db = client.db(dbName);
@@ -36,4 +36,5 @@ const getDb = () => {
 module.exports = {
   initDb,
   getDb,
+  ObjectId
 };
