@@ -876,7 +876,7 @@
         }
       }
     },
-    "/cart/{id}": {
+    "/cart/{cart_id}": {
       "get": {
         "tags": [
           "Cart"
@@ -884,7 +884,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "cart_id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -909,7 +909,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "cart_id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -934,34 +934,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/cart/{id}/total": {
-      "get": {
-        "tags": [
-          "Cart"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
+            "name": "cart_id",
             "in": "path",
             "required": true,
             "type": "string"
