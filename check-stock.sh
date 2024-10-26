@@ -1,50 +1,59 @@
 #!/bin/bash
 
-# Base URL for API requests
 BASE_URL="https://cse341-ecommerce-project.onrender.com"
 STORES_ENDPOINT="$BASE_URL/stores/"
 LOW_STOCK_ENDPOINT="$BASE_URL/products/store/low-stock"
-NTFY_TOPIC="byu_ecommerce_logs"  # Customize topic as needed
 
-# Get all store IDs
 response=$(curl --silent "$STORES_ENDPOINT")
-echo "Response from stores endpoint: $response"  # Debug statement
+echo "Response from stores endpoint: $response"  
 
 store_ids=$(echo "$response" | jq -r '.[]._id')
-echo "Store IDs: $store_ids"  # Debug statement
+echo "Store IDs: $store_ids"  
 
-# Check if store_ids is empty
 if [ -z "$store_ids" ]; then
   echo "No stores found."
   exit 0
 fi
 
-# Initialize message content
-current_date=$(date '+%Y-%m-%d %H:%M:%S')
-low_stock_message="Message: Low stock alert for the following items:
-
-Date: $current_date"
-
-# Iterate over each store ID to check for low-stock products
 for id in $store_ids; do
-  # Get low-stock products for the store ID
-  low_stock_products=$(curl --silent "$LOW_STOCK_ENDPOINT/$id" | jq -r '.[] | "Name: \(.name), Stock: \(.stock), ID: \(.id)"')
+  NTFY_TOPIC="byu_ecommerce_store_$id"
+  echo "Processing Store ID: $id with topic: $NTFY_TOPIC"
 
-  # If low_stock_products is not empty, add it to the message
+  for attempt in {1..3}; do
+    low_stock_response=$(curl --silent -w "\n%{http_code}" "$LOW_STOCK_ENDPOINT/$id")
+    http_code=$(echo "$low_stock_response" | tail -n1)
+low_stock_products=$(echo "$low_stock_response" | head -n -1 | jq -r '.[] | "Name: \(.name), Stock: \(.stock), ID: \(._id)"')
+
+    echo "Attempt $attempt - HTTP Code: $http_code"  
+
+    if [ "$http_code" -ne "000" ]; then
+      break
+    fi
+
+    echo "No response for Store ID: $id. Retrying..."
+    sleep 2  
+  done
+
+  
+  if [ "$http_code" == "404" ]; then
+    echo "No low-stock products found for Store ID: $id"
+    continue
+  elif [ "$http_code" == "000" ]; then
+    echo "Failed to get response for Store ID: $id after multiple attempts."
+    continue
+  fi
+
   if [ -n "$low_stock_products" ]; then
-    low_stock_message="$low_stock_message
+    current_date=$(date '+%Y-%m-%d %H:%M:%S')
+    low_stock_message="Message: Low stock alert for the following items:
 
-Store ID: $id
+Date: $current_date
+
 $low_stock_products"
+
+    curl -d "$low_stock_message" "https://ntfy.sh/$NTFY_TOPIC"
+    echo "Notification sent to topic $NTFY_TOPIC"
+  else
+    echo "No low-stock message content for Store ID: $id"
   fi
 done
-
-# Check if any low-stock products were found
-if [ "$low_stock_message" != "Message: Low stock alert for the following items:
-
-Date: $current_date" ]; then
-  # Send the message to the specified topic
-  curl -d "$low_stock_message" "https://ntfy.sh/$NTFY_TOPIC"
-else
-  echo "No low-stock products found."
-fi

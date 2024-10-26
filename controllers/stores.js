@@ -78,7 +78,6 @@ const createStore = async (req, res, next) => {
     let db = mongodb.getDb();
     let store = req.body;
 
-    store.api_key = apiKeyGen();
     store.created_at = new Date();
     store.status = store.status || 'open';
 
