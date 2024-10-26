@@ -1,21 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cart');
-const sendNotification = require('../tools/ntfy')
+const authorizationChecker = require('../tools/authorization-checker');
 
-// Admins
-router.get('/', cartController.getAllCarts);
+router.post('/',  authorizationChecker('customer'), cartController.createCart);
+router.put('/:cart_id',  authorizationChecker('customer'), cartController.updateCart);
+router.delete('/:cart_id',  authorizationChecker('customer'), cartController.deleteCart);
 
-// Only admins and managers (managers only change their store Carts)
-router.post('/', cartController.createCart);
-router.put('/:id', cartController.updateCart);
-router.delete('/:id', cartController.deleteCart);
-
-
-// Customer can see his cart.
-router.get('/:id', cartController.getCartById);
-
-// TODO: get all carts according to user store_id
-router.get('/store/:store_id', cartController.getCartsByStoreId);
+router.get('/', authorizationChecker('admin'), cartController.getAllCarts);
+router.get('/:cart_id', authorizationChecker('customer'), cartController.getCartById);
+router.get('/store/:store_id', authorizationChecker('manager'), cartController.getCartsByStoreId);
 
 module.exports = router;

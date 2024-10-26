@@ -3,10 +3,12 @@ const mongoose = require('mongoose');
 const cartSchema = new mongoose.Schema({
   user_id: {
     type: String,
+    required: [true, 'User ID is required'],
     
   },
   store_id: {
-    type: String, // Add id_store like string and not required
+    type: String, 
+    required: [true, 'Store ID is required '],
   },
   items: [
     {

@@ -167,10 +167,9 @@ const getLowStock = async (req, res, next) => {
     const id = req.params.id;
 
     const db = mongodb.getDb();
-    console.log(db);  
   
     const result = await db.collection('products').find({
-      _id: new ObjectId(id),
+      store_id: new ObjectId(id),
       stock: { $lt: 20 }
     }).toArray();
     

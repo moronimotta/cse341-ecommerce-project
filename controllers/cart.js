@@ -1,7 +1,7 @@
-const Cart = require('../models/Cart'); // Asumimos que este es tu modelo Mongoose, pero lo usaremos solo para la validación
 const mongodb = require('../data/database.js');
 const sendNotification = require('../tools/ntfy');
-const { MongoClient, ObjectId } = require('mongodb');
+const { ObjectId } = require('mongodb');
+const Cart = require('../models/Cart');
 
 
 // TODO: Jest test
@@ -20,29 +20,26 @@ const getAllCarts = async (req, res) => {
 const getCartById = async (req, res) => {
   const { id } = req.params;
 
-  // Log para verificar el ID recibido
-  console.log(`ID recibido: ${id}`);
-
-  // Validar el formato del ObjectId
   if (!ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid cart ID format' });
+    return res.status(400).json({ message: 'Invalid cart ID format' });
   }
 
   try {
-      const database = await mongodb.getDb(); // Asegúrate de que esta función se esté exportando correctamente
-      const cart = await database.collection('carts').findOne({ _id: new ObjectId(id) }); // Usa new ObjectId
+    const database = await mongodb.getDb();
+    const cart = await database.collection('carts').findOne({ _id: new ObjectId(id) });
 
-      // Verificar si el carrito existe
-      if (!cart) {
-          console.log('Carrito no encontrado con ese ID');
-          return res.status(404).json({ message: 'Cart not found' });
-      }
+    if ((req.session.user.role === 'manager' || req.session.user.role === 'customer') && cart.store_id.toString() !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
 
-      // Enviar el carrito encontrado
-      res.json(cart);
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    res.json(cart);
   } catch (err) {
-      console.error('Error al buscar el carrito:', err);
-      res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -77,11 +74,20 @@ const createCart = async (req, res) => {
       total_price += item.price * item.quantity;
     });
 
-    // setting user_id and store_id using the session values
-    const user_id = req.session.user._id;
-    const store_id = req.session.user.store_id;
+    let user_id = ''
+    let store_id = ''
 
-    // create the cart object with the properties name updated
+    if (req.session.user.role === 'manager' || req.session.user.role === 'admin') {
+      user_id = cartData.user_id;
+      if(req.session.user.role === 'admin'){
+        store_id = cartData.store_id;
+      }
+    } else {
+      user_id = req.session.user._id;
+      store_id = req.session.user.store_id;
+    }
+
+
     const newCart = {
       user_id,
       store_id,
@@ -89,9 +95,12 @@ const createCart = async (req, res) => {
       items: cartData.items
     };
 
+    const cart = new Cart(newCart);
+    await cart.validate();
+
     const result = await database.collection('carts').insertOne(newCart);
     res.status(201).json({ message: 'Cart created successfully', cartId: result.insertedId });
-  
+
   } catch (err) {
     sendNotification(err, 'system_error');
     res.status(500).json({ message: err.message });
@@ -108,13 +117,23 @@ const updateCart = async (req, res) => {
   }
 
   try {
-    const database = await mongodb.getDb(); 
+    const database = await mongodb.getDb();
+
+    const cart = await database.collection('carts').findOne({ _id: new ObjectId(id) });
+
+    if ((req.session.user.role === 'manager' || req.session.user.role === 'customer') && cart.store_id.toString() !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+    if(req.session.user.role === 'customer' && cart.user_id.toString() !== req.session.user._id){
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
     const response = await database.collection('carts').findOneAndUpdate(
       { _id: new ObjectId(id) },
       { $set: req.body },
-      { returnOriginal: false } 
+      { returnOriginal: false }
     );
-
+ 
     if (!response.value) {
       return res.status(404).json({ message: 'Cart not found' });
     }
@@ -131,57 +150,29 @@ const updateCart = async (req, res) => {
 const deleteCart = async (req, res) => {
   const { id } = req.params;
 
-  // Log para verificar el ID recibido
-  console.log(`ID recibido para eliminar: ${id}`);
-
-  // Validar el formato del ObjectId
-  if (!ObjectId.isValid(id)) { // Asegúrate de usar ObjectId aquí
+  if (!ObjectId.isValid(id)) {
     return res.status(400).json({ message: 'Invalid cart ID format' });
   }
 
   try {
+
+    const cart = await database.collection('carts').findOne({ _id: new ObjectId(id) });
+    if ((req.session.user.role === 'manager' || req.session.user.role === 'customer') && cart.store_id.toString() !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+    if(req.session.user.role === 'customer' && cart.user_id.toString() !== req.session.user._id){
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
     const database = await mongodb.getDb();
     const result = await database.collection('carts').deleteOne({ _id: new ObjectId(id) });
 
-    // Verificar si se eliminó algún carrito
     if (result.deletedCount === 0) {
-      console.log('Carrito no encontrado con ese ID');
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-    res.status(204).send(); // Enviar respuesta de éxito
+    res.status(204).send();
   } catch (err) {
-    console.error('Error al eliminar el carrito:', err);
-    res.status(500).json({ message: err.message });
-  }
-};
-
-
-// Get total price for the cart
-const getCartTotal = async (req, res) => {
-  const { id } = req.params;
-
-  // Verifica si mongodb.ObjectId está definido
-  if (!mongodb.ObjectId) {
-    return res.status(500).json({ message: 'Database object is not defined' });
-  }
-
-  if (!mongodb.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Invalid cart ID format' });
-  }
-
-  try {
-    const database = await mongodb.getDb();
-    const cart = await database.collection('carts').findOne({ _id: mongodb.ObjectId(id) });
-    
-    if (!cart) return res.status(404).json({ message: 'Cart not found' });
-
-    // Calcula el total de los productos
-    const total = cart.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-
-    res.json({ total });
-  } catch (err) {
-    console.error('Error fetching cart total:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -192,6 +183,5 @@ module.exports = {
   getCartsByStoreId,
   createCart,
   updateCart,
-  deleteCart,
-  getCartTotal
+  deleteCart
 };
