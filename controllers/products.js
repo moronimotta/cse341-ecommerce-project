@@ -24,7 +24,7 @@ const getSingleProd = async (req, res) => {
     const database = await mongodb.getDb();
     const response = await database.collection('products').findOne({ _id: new ObjectId(req.params.product_id) });
 
-    if (req.session.user.role === 'manager' && response.store_id.toString() !== req.session.user.store_id) {
+    if ((req.session.user.role === 'manager'  || req.session.user.role === 'customer')  && response.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' }); 
     }
 
@@ -160,6 +160,18 @@ const getAllProductsByStoreId = async (req, res) => {
   }
 };
 
+const updateStock = async (prod_id, quantity, type ='pay') => {
+  const db = mongodb.getDb();
+  const product = await db.collection('products').findOne({ _id: new ObjectId(prod_id) });
+  let newStock;
+  if (type === 'pay') {
+    newStock = product.stock - quantity;
+  } else {
+    newStock = product.stock + quantity;
+  }
+  await db.collection('products').updateOne({ _id: new ObjectId(prod_id) }, { $set: { stock: newStock } });
+};
+
 // TODO: Jest test
 const getLowStock = async (req, res, next) => {
   try {
@@ -194,5 +206,6 @@ const getLowStock = async (req, res, next) => {
     createProd,
     deleteProd,
     getAllProductsByStoreId,
-    getLowStock
+    getLowStock,
+    updateStock
   }

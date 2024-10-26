@@ -3,6 +3,7 @@ dotenv.config();
 
 const authorizationChecker = (lvl = 'admin') => {
     return async (req, res, next) => {
+        // If AUTH is not enabled, allow all requests
         if (process.env.AUTH !== 'true') {
             return next();
         }
@@ -32,32 +33,16 @@ const authorizationChecker = (lvl = 'admin') => {
                 } else {
                     return res.status(403).json({ message: 'Forbidden' });
                 }
-
-                case 'manager':
-                    if (req.session.user.role === 'admin' || (req.session.user.role === 'manager' && req.body.store_id === undefined && req.params.id === undefined)) {
-                        return next();
-                    }
-                    else if (req.session.user.role === 'manager'
-                        && ((req.session.user.store_id === req.body.store_id && req.body !== undefined) 
-                        || (req.session.user.store_id === req.params.id && req.params !== undefined))) {
-                        return next();
-                    } else {
-                        return res.status(403).json({ message: 'Forbidden' });
-                    }
-                
+            case 'manager':
+                if (req.session.user.role === 'admin' || 
+                    req.session.user.role === 'manager' ) {
+                    return next();
+               } else {
+                    return res.status(403).json({ message: 'Forbidden' });
+                }
                 case 'customer':
-                    if (req.session.user.role === 'admin' || req.session.user.role === 'manager') {
-                        return next();
-                    }
-                    else if ((req.session.user.role === 'customer')
-                        && ((req.session.user._id === req.body.user_id && req.body !== undefined) 
-                        || (req.session.user._id === req.params.id && req.params !== undefined))) {
-                        return next();
-                    } else {
-                        return res.status(403).json({ message: 'Forbidden' });
-                    }
+                    return next();
                 
-
             default:
                 return res.status(403).json({ message: 'Forbidden' });
         }
