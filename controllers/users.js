@@ -139,9 +139,9 @@ const createUser = async (req, res, next) => {
 
     user.active = true;
 
-    const existingUser = await collection.findOne({ email: user.email });
+    const existingUser = await collection.findOne({ email: user.email, store_id: user.store_id });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already exists' });
+      return res.status(400).json({ message: 'Email already exists for this store' });
     }
 
     const response = await collection.insertOne(user);
@@ -194,6 +194,7 @@ const deleteUser = async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(204).send();
   } catch (err) {
+    sendNotification(err, 'system_error');
     res.status(500).json({ message: err.message });
   }
 };
@@ -211,6 +212,7 @@ const getUserByGithubId = async (id) => {
     }
     return user;
   } catch (err) {
+    sendNotification(err, 'system_error');
     throw new Error(err.message);
   }
 };
@@ -227,6 +229,7 @@ const getUserByIdAndApiKey = async (id, apiKey) => {
     }
     return user;
   } catch (err) {
+    sendNotification(err, 'system_error');
     throw new Error(err.message);
   }
 };
@@ -243,6 +246,7 @@ const getUsersByStoreId = async (id) => {
     }
     return users;
   } catch (err) {
+    sendNotification(err, 'system_error');
     throw new Error(err.message);
   }
 };
@@ -261,6 +265,7 @@ const getUserByEmailAndPassword = async (email, password) => {
     return user;
   }
   catch (err) {
+    sendNotification(err, 'system_error');
     throw new Error(err.message);
   }
 }

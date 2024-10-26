@@ -1,11 +1,9 @@
 const dotenv = require('dotenv');
 dotenv.config();
-const sendNotification = async (admin_message,log_type = "info", manager_message,  manager_topic) => {
+const sendNotification = async (admin_message,log_type = "info") => {
     if (process.env.ENV !== 'production') {
         return 
     }
-
-    // TODO: when implementing the authorization, use req.user.store_id to build the topic = `byu_ecommerce_store_${req.user.store_id}`
 
     let topic = 'byu_ecommerce_logs';
     try {
@@ -15,8 +13,6 @@ const sendNotification = async (admin_message,log_type = "info", manager_message
             'Priority': 'normal',
             'Tags': 'info'
         };
-
-        const formattedMessage = `Message: ${admin_message}\n\nDate: ${new Date().toLocaleString()}`;
 
         switch (log_type) {
             case 'system_error':
@@ -31,13 +27,6 @@ const sendNotification = async (admin_message,log_type = "info", manager_message
                 headers.Tags = 'error,bug';
                 topic = 'byu_ecommerce_errors';
                 break;
-
-            default:
-                admin_message = formattedMessage; 
-                headers.Title = 'Information';
-                headers.Priority = 'low';
-                headers.Tags = 'info';
-                break;
         }
 
         let response = await fetch(`https://ntfy.sh/${topic}`, {
@@ -49,20 +38,6 @@ const sendNotification = async (admin_message,log_type = "info", manager_message
         if (!response.ok) {
             throw new Error(`Error: ${response.statusText}`);
         }
-
-        // if (manager_message) {
-        //     headers.Title = 'Manager Notification';
-        //     headers.Tags = 'manager';
-        //     response = await fetch(`https://ntfy.sh/${manager_topic}`, {
-        //         method: 'POST',
-        //         body: manager_message,
-        //         headers: headers
-        //     });
-
-        //     if (!response.ok) {
-        //         throw new Error(`Error: ${response.statusText}`);
-        //     }
-        // }
 
         const data = await response.text();
         return console.log('Notification sent:', data);

@@ -39,6 +39,7 @@ const getCartById = async (req, res) => {
 
     res.json(cart);
   } catch (err) {
+    sendNotification(err, 'system_error');
     res.status(500).json({ message: err.message });
   }
 };
@@ -173,6 +174,7 @@ const deleteCart = async (req, res) => {
 
     res.status(204).send();
   } catch (err) {
+    sendNotification(err, 'system_error');
     res.status(500).json({ message: err.message });
   }
 };

@@ -25,6 +25,7 @@ const getStore = async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(stores[0]); 
   } catch (err) {
+    sendNotification(err, 'system_error');
     throw res.json(createError(500, err.message));
   }
 };
@@ -40,6 +41,7 @@ const getStores = async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(stores);
   } catch (err) {
+    sendNotification(err, 'system_error');
     throw res.json(createError(500, err.message));
   }
 };
