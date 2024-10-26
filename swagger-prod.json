@@ -35,7 +35,6 @@
       "name": "Orders",
       "description": "Operations related to orders"
     }
-    
   ],
   "paths": {
     "/login": {
@@ -535,7 +534,7 @@
         "produces": [
           "application/json"
         ],
-        "parameters":[
+        "parameters": [
           {
             "name": "Authorization",
             "in": "header",
@@ -637,49 +636,49 @@
         }
       }
     },
-    "/products/{product_id}": {  
-  "get": {
-    "tags": [
-      "Products"
-    ],
-    "description": "Retrieve a single product by its ID.",
-    "produces": [
-      "application/json"
-    ],
-    "parameters": [
-      {
-        "name": "Authorization",
-        "in": "header",
-        "required": true,
-        "type": "string",
-        "description": "Bearer token for authentication"
-      },
-      {
-        "name": "product_id", 
-        "in": "path",
-        "required": true,
-        "type": "string"
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "OK",
-        "examples": {
-          "application/json": {
-            "_id": "60c72b2f4f1a4a3d2e75b9d3",
-            "name": "Product Name",
-            "stock": 100,
-            "description": "Product Description",
-            "brand": "Brand Name",
-            "category": "Category Name"
+    "/products/{product_id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "description": "Retrieve a single product by its ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token for authentication"
+          },
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "examples": {
+              "application/json": {
+                "_id": "60c72b2f4f1a4a3d2e75b9d3",
+                "name": "Product Name",
+                "stock": 100,
+                "description": "Product Description",
+                "brand": "Brand Name",
+                "category": "Category Name"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
-      "500": {
-        "description": "Internal Server Error"
-      }
-    }
-  },
       "delete": {
         "tags": [
           "Products"
@@ -1018,6 +1017,69 @@
           },
           "422": {
             "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/orders/pay/{id}": {
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "description": "Pay an order by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/orders/refund/{id}": {
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "description": "Refund an order by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK."
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
