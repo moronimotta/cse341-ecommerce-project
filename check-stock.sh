@@ -22,7 +22,7 @@ for id in $store_ids; do
   for attempt in {1..3}; do
     low_stock_response=$(curl --silent -w "\n%{http_code}" "$LOW_STOCK_ENDPOINT/$id")
     http_code=$(echo "$low_stock_response" | tail -n1)
-low_stock_products=$(echo "$low_stock_response" | head -n -1 | jq -r '.[] | "Name: \(.name), Stock: \(.stock), ID: \(._id)"')
+    low_stock_products=$(echo "$low_stock_response" | head -n -1 | jq -r '.[] | "Name: \(.name), Stock: \(.stock), ID: \(._id)"')
 
     echo "Attempt $attempt - HTTP Code: $http_code"  
 
@@ -34,7 +34,6 @@ low_stock_products=$(echo "$low_stock_response" | head -n -1 | jq -r '.[] | "Nam
     sleep 2  
   done
 
-  
   if [ "$http_code" == "404" ]; then
     echo "No low-stock products found for Store ID: $id"
     continue
@@ -49,7 +48,7 @@ low_stock_products=$(echo "$low_stock_response" | head -n -1 | jq -r '.[] | "Nam
 
 Date: $current_date
 
-$low_stock_products"
+$(echo "$low_stock_products" | sed ':a;N;$!ba;s/\n/\n\n/g')"
 
     curl -d "$low_stock_message" "https://ntfy.sh/$NTFY_TOPIC"
     echo "Notification sent to topic $NTFY_TOPIC"
