@@ -12,12 +12,10 @@ router.put('/:id', cartController.updateCart);
 router.delete('/:id', cartController.deleteCart);
 
 
-// I dont think we need that.
-router.get('/:id/total', cartController.getCartTotal);
-
 // Customer can see his cart.
 router.get('/:id', cartController.getCartById);
 
 // TODO: get all carts according to user store_id
+router.get('/store/:store_id', cartController.getCartsByStoreId);
 
 module.exports = router;
