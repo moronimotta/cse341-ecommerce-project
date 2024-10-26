@@ -64,11 +64,13 @@ const updateUser = async (req, res, next) => {
       if (!store) {
         return res.status(400).json({ message: 'Store not found' });
       }
+    }else {
+      return res.status(400).json({ message: 'Store not found' });
     }
 
 
     const userToUpdate = await collection.findOne({ _id: new ObjectId(id) });
-    if (req.session.user.role === 'customer' && userToUpdate._id !== req.session.user._id) {
+    if (req.session.user.role === 'customer' && userToUpdate._id.toString() !== req.session.user._id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
     if (req.session.user.role === 'manager' && userToUpdate.store_id !== req.session.user.store_id) {
@@ -143,7 +145,10 @@ const createUser = async (req, res, next) => {
     }
 
     const response = await collection.insertOne(user);
-    const output = response.insertedId.toString();
+    const output = {
+      id: response.insertedId.toString(),
+      api_key: user.api_key
+    };
 
     if (response.acknowledged) {
       if (user.github_id) {

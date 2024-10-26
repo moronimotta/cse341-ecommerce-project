@@ -7,6 +7,10 @@ const authorizationChecker = (lvl = 'admin') => {
             return next();
         }
 
+        if (req.session.user.role === 'admin') {
+            return next();
+        }
+
         if (!req.session.user) {
             return res.status(401).json({ message: 'Unauthorized: Not logged in' });
         }

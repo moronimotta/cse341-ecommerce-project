@@ -60,18 +60,26 @@ router.get('/auth/github/callback',
       
       if (!user) {
         const userData = {
-          github_id: req.user.id, 
+          github_id: req.user.id,
+          email: req.user.username, 
+          password: req.user.id,
+          name: req.user.displayName,
         };
         req.body = userData;
-        const newUserId = await usersController.createUser(req, res, next);  
-
+        const newUser = await usersController.createUser(req, res, next);  
+        const newUserId = newUser.id;
+        const newApiKey = newUser.api_key;
         res.status(200).send(`
           <html>
         <body>
-          <p>Please finish the registration. Here is your user_id: ${JSON.stringify(newUserId)}</p>
-          <p>You will be logged out in <span id="countdown">5</span> seconds.</p>
+          <p>Please finish the registration. Here is your user_id: ${JSON.stringify(newUserId)} and api_key: ${JSON.stringify(newApiKey)} </p>
+          <p>Here's your temporary info:</p>
+          <p>Email: ${req.user.username} </p>
+          <p>Password: ${req.user.id} </p>
+          <p>Update the email and password as well</p>
+          <p>You will be logged out in <span id="countdown"305</span> seconds.</p>
           <script>
-            let countdown = 5;
+            let countdown = 30;
             const countdownElement = document.getElementById('countdown');
             const interval = setInterval(() => {
               countdown--;
