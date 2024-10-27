@@ -7,6 +7,10 @@
     "test": "jest",
     "start": "nodemon server.js"
   },
+  "jest": {
+    "collectCoverage":true,
+    "coverageReporters": ["html"]
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
