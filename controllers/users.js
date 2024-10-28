@@ -22,6 +22,9 @@ const getUser = async (req, res, next) => {
     if (req.session.user.role === 'manager' && user.store_id !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
+    if (req.session.user.role === 'customer' && user._id.toString() !== req.session.user._id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
