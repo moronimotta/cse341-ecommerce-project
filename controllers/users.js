@@ -60,7 +60,7 @@ const updateUser = async (req, res, next) => {
     const id = req.params.id;
     const user = req.body;
 
-    if (user.store_id) {
+    if (user.store_id !== undefined) {
       const input = { params: { id: user.store_id, validation: true } };
 
       const store = await storeController.getStore(input, res, next);
