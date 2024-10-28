@@ -85,12 +85,15 @@ router.get('/auth/github/callback',
         const newApiKey = newUser.api_key;
         res.status(200).send(`
           <html>
+
         <body>
-          <p>Please finish the registration. Here is your user_id: ${JSON.stringify(newUserId)} and api_key: ${JSON.stringify(newApiKey)} </p>
-          <p>Here's your temporary info:</p>
+          <p>Please finish the registration.  </p>
+          <p>Here is your user_id: ${JSON.stringify(newUserId)} and api_key: ${JSON.stringify(newApiKey)} </p>
+          <p>Use in the header of your request to update your user: Authorization: 'Bearer ${JSON.stringify(newApiKey)}' </p>
+          <br>
+          <p>Use the temporarily defined email and password:</p>
           <p>Email: ${req.user.username} </p>
           <p>Password: ${req.user.id} </p>
-          <p>Update the email and password as well</p>
           <p>You will be logged out in <span id="countdown"305</span> seconds.</p>
           <script>
             let countdown = 30;

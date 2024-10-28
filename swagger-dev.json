@@ -109,7 +109,7 @@
             "name": "Authorization",
             "in": "header",
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           },
           {
             "name": "body",
@@ -199,7 +199,7 @@
             "name": "Authorization",
             "in": "header",
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           },
           {
             "name": "id",
@@ -271,7 +271,7 @@
             "name": "Authorization",
             "in": "header",
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           },
           {
             "name": "id",
@@ -305,7 +305,7 @@
             "in": "header",
             "required": true,
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           }
         ],
         "responses": {
@@ -394,7 +394,7 @@
             "name": "Authorization",
             "in": "header",
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           },
           {
             "name": "id",
@@ -422,7 +422,7 @@
             "name": "Authorization",
             "in": "header",
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           },
           {
             "name": "id",
@@ -502,7 +502,7 @@
             "name": "Authorization",
             "in": "header",
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           },
           {
             "name": "id",
@@ -539,7 +539,7 @@
             "in": "header",
             "required": true,
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           }
         ],
         "responses": {
@@ -573,7 +573,7 @@
             "name": "Authorization",
             "in": "header",
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           },
           {
             "name": "body",
@@ -649,7 +649,7 @@
         "in": "header",
         "required": true,
         "type": "string",
-        "description": "Bearer token for authentication"
+        "description": "'Bearer + API Key'"
       },
       {
         "name": "product_id", 
@@ -687,7 +687,7 @@
             "name": "Authorization",
             "in": "header",
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           },
           {
             "name": "product_id",
@@ -715,7 +715,7 @@
             "name": "Authorization",
             "in": "header",
             "type": "string",
-            "description": "Bearer token for authentication"
+            "description": "'Bearer + API Key'"
           },
           {
             "name": "product_id",
@@ -771,40 +771,6 @@
         }
       }
     },
-    "/products/get/low-stock": {
-      "get": {
-        "tags": [
-          "Products"
-        ],
-        "description": "Retrieve all products with stock lower than 20.",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "examples": {
-              "application/json": [
-                {
-                  "_id": "60c72b2f4f1a4a3d2e75b9d3",
-                  "name": "Low Stock Product",
-                  "stock": 10,
-                  "description": "Product with low stock",
-                  "brand": "Brand Name",
-                  "category": "Category Name"
-                }
-              ]
-            }
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
     "/products/store/{id}": {
     "get": {
       "tags": [
@@ -827,7 +793,7 @@
           "in": "header",
           "required": true,
           "type": "string",
-          "description": "Bearer token for authentication"
+          "description": "'Bearer + API Key'"
         }
       ],
       "responses": {
@@ -860,6 +826,14 @@
         "tags": [
           "Cart"
         ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "'Bearer + API Key'"
+          }
+        ],
         "description": "",
         "responses": {
           "200": {
@@ -876,6 +850,12 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "'Bearer + API Key'"
+          },
           {
             "name": "body",
             "in": "body",
@@ -899,13 +879,16 @@
                       "quantity": {
                         "type": "integer",
                         "example": 1
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 15.00
                       }
                     }
                   }
                 }
               },
               "required": [
-                "user_id",
                 "items"
               ]
             }
@@ -928,6 +911,12 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "'Bearer + API Key'"
+          },
           {
             "name": "cart_id",
             "in": "path",
@@ -954,10 +943,50 @@
         "description": "",
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "'Bearer + API Key'"
+          },
+          {
             "name": "cart_id",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "type": "string",
+                  "example": "User ID"
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "product_id": {
+                        "type": "string",
+                        "example": "Product ID"
+                      },
+                      "quantity": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 15.00
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -979,6 +1008,12 @@
         "description": "",
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "'Bearer + API Key'"
+          },
+          {
             "name": "cart_id",
             "in": "path",
             "required": true,
@@ -997,7 +1032,56 @@
           }
         }
       }
-    },
+    },"/cart/store/{store_id}": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "description": "Retrieve all carts for a specific store by store ID.",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "name": "store_id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Store ID"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "examples": {
+            "application/json": [
+              {
+                "_id": "60c72b2f4f1a4a3d2e75b9d3",
+                "name": "Product Name",
+                "stock": 50,
+                "description": "Product Description",
+                "brand": "Brand Name",
+                "category": "Category Name"
+              }
+            ]
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "500": {
+          "description": "Internal Server Error"
+        }
+      }
+    }
+  },
     "/orders/": {
       "get": {
         "tags": [
@@ -1022,6 +1106,12 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "'Bearer + API Key'"
+          },
           {
             "name": "body",
             "in": "body",
@@ -1081,6 +1171,12 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "'Bearer + API Key'"
+          },
+          {
             "name": "order_id",
             "in": "path",
             "required": true,
@@ -1105,6 +1201,12 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "'Bearer + API Key'"
+          },
           {
             "name": "order_id",
             "in": "path",
@@ -1165,6 +1267,12 @@
         ],
         "description": "",
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "description": "'Bearer + API Key'"
+          },
           {
             "name": "order_id",
             "in": "path",

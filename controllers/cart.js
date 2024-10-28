@@ -18,16 +18,13 @@ const getAllCarts = async (req, res) => {
 
 // TODO: Jest test
 const getCartById = async (req, res) => {
-  const { id } = req.params;
-
-  if (!ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Invalid cart ID format' });
-  }
 
   try {
     const database = await mongodb.getDb();
-    const cart = await database.collection('carts').findOne({ _id: new ObjectId(id) });
-
+    const cart = await database.collection('carts').findOne({ _id: new ObjectId(req.params.cart_id) });
+    if (cart === undefined) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
     if ((req.session.user.role === 'manager' || req.session.user.role === 'customer') && cart.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
@@ -45,11 +42,9 @@ const getCartById = async (req, res) => {
 };
 
 const getCartsByStoreId = async (req, res) => {
-  const { store_id } = req.params;
-
   try {
     const database = await mongodb.getDb();
-    const carts = await database.collection('carts').find({ store_id }).toArray();
+    const carts = await database.collection('carts').find({ store_id: req.params.store_id }).toArray();
 
     if (carts.length === 0) {
       return res.status(404).json({ message: 'No carts found the specified store' });
@@ -64,14 +59,16 @@ const getCartsByStoreId = async (req, res) => {
 
 // Create a new cart
 const createCart = async (req, res) => {
-  const { cartData } = req.body;
-
+  
   try {
     const database = await mongodb.getDb();
 
     // Calculate the total price based in the cart items
     let total_price = 0;
-    cartData.items.forEach(item => {
+    req.body.items.forEach(item => {
+      if(!item.price || !item.quantity){
+        throw new Error('Invalid item format');
+      }
       total_price += item.price * item.quantity;
     });
 
@@ -79,9 +76,9 @@ const createCart = async (req, res) => {
     let store_id = ''
 
     if (req.session.user.role === 'manager' || req.session.user.role === 'admin') {
-      user_id = cartData.user_id;
+      user_id = req.body.user_id;
       if(req.session.user.role === 'admin'){
-        store_id = cartData.store_id;
+        store_id = req.body.store_id;
       }
     } else {
       user_id = req.session.user._id;
@@ -93,14 +90,14 @@ const createCart = async (req, res) => {
       user_id,
       store_id,
       total_price,
-      items: cartData.items
+      items: req.body.items
     };
 
     const cart = new Cart(newCart);
     await cart.validate();
 
     const result = await database.collection('carts').insertOne(newCart);
-    res.status(201).json({ message: 'Cart created successfully', cartId: result.insertedId });
+    res.status(201).json({ message: 'Cart created successfully', _id: result.insertedId });
 
   } catch (err) {
     sendNotification(err, 'system_error');
@@ -110,23 +107,33 @@ const createCart = async (req, res) => {
 
 // Update cart
 const updateCart = async (req, res) => {
-  const { id } = req.params;
-
-  // Validate the format Mongodb ID 
-  if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-    return res.status(400).json({ message: 'Invalid cart ID format' });
-  }
 
   try {
     const database = await mongodb.getDb();
 
-    const cart = await database.collection('carts').findOne({ _id: new ObjectId(id) });
+    const cart = await database.collection('carts').findOne({ _id: new ObjectId(req.params.cart_id) });
 
     if ((req.session.user.role === 'manager' || req.session.user.role === 'customer') && cart.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
     if(req.session.user.role === 'customer' && cart.user_id.toString() !== req.session.user._id){
       return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    if(req.body.total_price !== undefined){
+      throw new Error('Total price cannot be updated');
+    }
+    
+    // if items are updated, then recalculate the total price
+    if (req.body.items) {
+      let total_price = 0;
+      req.body.items.forEach(item => {
+        if(!item.price || !item.quantity){
+          throw new Error('Invalid item format');
+        }
+        total_price += item.price * item.quantity;
+      });
+      req.body.total_price = total_price;
     }
 
     const response = await database.collection('carts').findOneAndUpdate(
@@ -149,15 +156,10 @@ const updateCart = async (req, res) => {
 
 // Delete cart
 const deleteCart = async (req, res) => {
-  const { id } = req.params;
-
-  if (!ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Invalid cart ID format' });
-  }
 
   try {
 
-    const cart = await database.collection('carts').findOne({ _id: new ObjectId(id) });
+    const cart = await database.collection('carts').findOne({ _id: new ObjectId(req.params.cart_id) });
     if ((req.session.user.role === 'manager' || req.session.user.role === 'customer') && cart.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
