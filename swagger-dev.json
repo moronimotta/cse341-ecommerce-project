@@ -805,6 +805,56 @@
         }
       }
     },
+    "/products/store/{id}": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "description": "Retrieve all products for a specific store by store ID.",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Store ID"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "description": "Bearer token for authentication"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "examples": {
+            "application/json": [
+              {
+                "_id": "60c72b2f4f1a4a3d2e75b9d3",
+                "name": "Product Name",
+                "stock": 50,
+                "description": "Product Description",
+                "brand": "Brand Name",
+                "category": "Category Name"
+              }
+            ]
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "500": {
+          "description": "Internal Server Error"
+        }
+      }
+    }
+  },
     "/cart/": {
       "get": {
         "tags": [

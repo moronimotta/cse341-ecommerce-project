@@ -8,8 +8,10 @@
     "start": "nodemon server.js"
   },
   "jest": {
-    "collectCoverage":true,
-    "coverageReporters": ["html"]
+    "collectCoverage": true,
+    "coverageReporters": [
+      "html"
+    ]
   },
   "author": "",
   "license": "ISC",
