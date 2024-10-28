@@ -3,12 +3,22 @@ const passport = require('passport');
 const usersController = require('../controllers/users');
 const User = require('../models/User');
 
-router.use('/swagger', require('./swagger')); 
 router.use('/users', require('./users'));
 router.use('/products', require('./products'));
 router.use('/cart', require('./cart'));
 router.use('/orders', require('./orders'));
 router.use('/stores', require('./stores'));
+
+let swaggerDocument;
+
+if(process.env.ENV !== 'production') {
+  swaggerDocument = require('../swagger-dev.json');
+}else{
+
+  swaggerDocument = require('../swagger-prod.json');
+}
+
+router.use('/api-docs', swaggerUI.serve);
 
 router.get('/', (req, res) => {
    if (req.session.user !== undefined) {
@@ -17,6 +27,9 @@ router.get('/', (req, res) => {
     res.send('Please log in to continue.');
   }
 });
+
+
+router.get('/api-docs', swaggerUI.setup(swaggerDocument));
 
 router.get('/healthcheck', (req, res) => {
   res.send('OK');
