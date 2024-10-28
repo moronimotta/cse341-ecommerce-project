@@ -2,6 +2,7 @@ const router = require('express').Router();
 const passport = require('passport');
 const usersController = require('../controllers/users');
 const User = require('../models/User');
+const swaggerUI = require('swagger-ui-express');
 
 router.use('/users', require('./users'));
 router.use('/products', require('./products'));
