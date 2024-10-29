@@ -36,7 +36,7 @@
       "description": "Operations related to orders"
     }
   ],
- "paths": {
+"paths": {
     "/login": {
       "get": {
         "tags": [
@@ -878,13 +878,16 @@
                       "quantity": {
                         "type": "integer",
                         "example": 1
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 15.00
                       }
                     }
                   }
                 }
               },
               "required": [
-                "user_id",
                 "items"
               ]
             }
@@ -949,6 +952,40 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "type": "string",
+                  "example": "User ID"
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "product_id": {
+                        "type": "string",
+                        "example": "Product ID"
+                      },
+                      "quantity": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 15.00
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -994,7 +1031,56 @@
           }
         }
       }
-    },
+    },"/cart/store/{store_id}": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "description": "Retrieve all carts for a specific store by store ID.",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "name": "store_id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Store ID"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "examples": {
+            "application/json": [
+              {
+                "_id": "60c72b2f4f1a4a3d2e75b9d3",
+                "name": "Product Name",
+                "stock": 50,
+                "description": "Product Description",
+                "brand": "Brand Name",
+                "category": "Category Name"
+              }
+            ]
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "500": {
+          "description": "Internal Server Error"
+        }
+      }
+    }
+  },
     "/orders/": {
       "get": {
         "tags": [
