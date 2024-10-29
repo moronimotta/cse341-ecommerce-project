@@ -10,14 +10,11 @@ const orderSchema = new mongoose.Schema({
     // required: [true, 'Cart ID is required'],
   },
   amount: {
-    // TODO: program will calculate the total price based on the items in the cart
     type: Number,
-    required: [true, 'Amount is required'],
-    min: [0, 'Amount cannot be negative']
+    required: [true, 'Amount is required']
   },
   status: {
-    // TODO: when it's first created it will be 'pending'. Only after the payment is confirmed it will be 'paid'. If the user asks for a refund, it will be 'refund'.
-    // TODO: So the user will not change this value
+  
     type: String,
     enum: {
       values: ['paid', 'refund', 'pending'],

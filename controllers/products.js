@@ -160,15 +160,17 @@ const getAllProductsByStoreId = async (req, res) => {
   }
 };
 
-const updateStock = async (prod_id, quantity, type ='pay') => {
+const updateStock = async (prod_id, quantity, type = 'pay') => {
   const db = mongodb.getDb();
   const product = await db.collection('products').findOne({ _id: new ObjectId(prod_id) });
   let newStock;
+
   if (type === 'pay') {
     newStock = product.stock - quantity;
   } else {
     newStock = product.stock + quantity;
   }
+
   await db.collection('products').updateOne({ _id: new ObjectId(prod_id) }, { $set: { stock: newStock } });
 };
 

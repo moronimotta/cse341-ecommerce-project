@@ -19,9 +19,9 @@ const getAllOrders = async (req, res) => {
 // TODO: Jest test
 const getSingleOrder = async (req, res) => {
   try {
-    const orderId = new ObjectId(req.params.order_id);
+   
     const database = await mongodb.getDb();
-    const response = await database.collection('orders').findOne({ _id: orderId });
+    const response = await database.collection('orders').findOne({ _id: new ObjectId(req.params.order_id) });
 
     if (req.session.user.role === 'manager' && response.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
@@ -54,25 +54,32 @@ const createOrder = async (req, res) => {
       if (!store) {
         return res.status(400).json({ message: 'Store not found' });
       }
+    }else {
+      orderData.store_id = req.session.user.store_id;
     }
 
     // Check if cart_id exists
+    let cart = '';
     if (orderData.cart_id) {
-      const cart = await database.collection('carts').findOne({ _id: new ObjectId(orderData.cart_id) });
+      cart = await database.collection('carts').findOne({ _id: new ObjectId(orderData.cart_id) });
       if (!cart) {
         return res.status(400).json({ message: 'Cart not found' });
       }
     }
 
-    if (req.session.user.role === 'manager' && orderData.store_id.toString() !== req.session.user.store_id &&
-      cart.store_id.toString() !== req.session.user.store_id && cart.user_id.toString() !== req.session.user._id) {
+    if(req.session.user.role === 'manager' && cart.store_id.toString() !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    } 
+
+    // check if customer is the owner of the cart
+    if (req.session.user.role === 'customer' && cart.user_id.toString() !== req.session.user._id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    if (req.session.user.role === 'customer' && orderData.user_id.toString() !== req.session.user._id &&
-      cart.user_id.toString() !== req.session.user._id && cart.store_id.toString() !== req.session.user.store_id) {
-      return res.status(403).json({ message: 'Forbidden' });
-    }
+
+    orderData.user_id = cart.user_id;
+    orderData.amount = cart.total_price;
+    orderData.date = new Date();
 
     const newOrder = new Order(orderData);
     await newOrder.validate();
@@ -216,31 +223,36 @@ const payOrder = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
+    // if order has a negative amount, it means it has been refunded
+    if (order.amount < 0) {
+      return res.status(400).json({ message: 'Order has been refunded' });
+    }
+
     const response = await database.collection('orders').updateOne({ _id: orderId }, { $set: { status: 'paid' } });
 
     if (response.modifiedCount > 0) {
       res.status(200).json({ message: 'Order status updated to paid' });
     } else if (response.matchedCount === 0) {
-      res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({ message: 'Order not found' });
     } else {
-      throw new Error('Order is already paid');
+      return res.status(400).json({ message: 'Order is already paid' });
     }
 
-    const cart = await database.collection('carts').findOne({ _id: order.cart_id });
+    const cart = await database.collection('carts').findOne({ _id: new ObjectId(order.cart_id) });
 
     for (let item of cart.items) {
       await productController.updateStock(item.product_id, item.quantity, 'pay');
     }
 
-
   } catch (error) {
     sendNotification(error, 'system_error');
-    res.status(500).json({ error: error.message || 'An unknown error occurred' });
+    if (!res.headersSent) {  
+      res.status(500).json({ error: error.message || 'An unknown error occurred' });
+    }
   }
 };
 
 const refundOrder = async (req, res) => {
- 
   try {
     const orderId = new ObjectId(req.params.order_id);
     const database = await mongodb.getDb();
@@ -253,24 +265,27 @@ const refundOrder = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    const response = await database.collection('orders').updateOne({ _id: orderId }, { $set: { status: 'refund', amount: 0 } });
+    const response = await database.collection('orders').updateOne({ _id: orderId }, { $set: { status: 'refund', amount: (order.amount * -1) } });
 
     if (response.modifiedCount > 0) {
-      res.status(200).json({ message: 'Order status refunded' });
+      const cart = await database.collection('carts').findOne({ _id: new ObjectId(order.cart_id) });
+
+      for (let item of cart.items) {
+        await productController.updateStock(item.product_id, item.quantity, 'refund');
+      }
+
+      return res.status(200).json({ message: 'Order status refunded' });
     } else {
-      res.status(500).json({ message: 'Failed to update order status to refund' });
-    }
-
-    const cart = await database.collection('carts').findOne({ _id: order.cart_id });
-
-    for (let item of cart.items) {
-      await productController.updateStock(item.product_id, item.quantity, 'refund');
+      return res.status(500).json({ message: 'Failed to update order status to refund' });
     }
 
   } catch (error) {
     sendNotification(error, 'system_error');
-    res.status(500).json({ error: error.message || 'An unknown error occurred' });
+    if (!res.headersSent) { 
+      return res.status(500).json({ error: error.message || 'An unknown error occurred' });
+    }
   }
 };
+
 
 module.exports = { getAllOrders, getSingleOrder, createOrder, updateOrder, deleteOrder, getAllOrdersByStoreId, getAllOrdersByUserId, payOrder, refundOrder };

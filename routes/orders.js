@@ -13,8 +13,8 @@ router.delete('/:order_id', authorizationChecker('manager'), ordersController.de
 router.get('/store/:id', authorizationChecker('manager'), ordersController.getAllOrdersByStoreId);
 
 // Customer can see his orders.
-router.put('/refund/:order_id', authorizationChecker('customer'), ordersController.refundOrder)
-router.put('/pay/:order_id', authorizationChecker('customer'), ordersController.payOrder)
+router.post('/refund/:order_id', authorizationChecker('customer'), ordersController.refundOrder)
+router.post('/pay/:order_id', authorizationChecker('customer'), ordersController.payOrder)
 router.get('/:order_id', authorizationChecker('customer'), ordersController.getSingleOrder);
 router.get('/user/:user_id', authorizationChecker('customer'), ordersController.getAllOrdersByUserId);
 

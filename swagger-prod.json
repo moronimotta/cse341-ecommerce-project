@@ -1118,29 +1118,13 @@
             "schema": {
               "type": "object",
               "properties": {
-                "user_id": {
-                  "type": "string",
-                  "example": "any"
-                },
-                "amount": {
-                  "type": "number",
-                  "example": 100.0
-                },
-                "status": {
-                  "type": "string",
-                  "example": "any"
-                },
-                "date": {
-                  "type": "string",
-                  "example": "any"
-                },
+      
                 "cart_id": {
                   "type": "string",
                   "example": "any"
                 }
               },
               "required": [
-                "amount",
                 "cart_id"
               ]
             }
@@ -1295,9 +1279,9 @@
         }
       }
     }, "/orders/pay/{id}": {
-    "get": {
+    "post": {
       "tags": [
-        "Products"
+        "Orders"
       ],
       "description": "Pay order",
       "produces": [
@@ -1332,9 +1316,9 @@
       }
     }
   }, "/orders/refund/{id}": {
-    "get": {
+    "post": {
       "tags": [
-        "Products"
+        "Orders"
       ],
       "description": "Refund Order.",
       "produces": [
@@ -1371,7 +1355,7 @@
   }, "/orders/user/{id}": {
     "get": {
       "tags": [
-        "Products"
+        "Orders"
       ],
       "description": "Retrieve all orders by user ID.",
       "produces": [
