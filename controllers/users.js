@@ -19,7 +19,7 @@ const getUser = async (req, res, next) => {
     const id = req.params.id;
 
     const user = await collection.findOne({ _id: new ObjectId(id) });
-    if (req.session.user.role === 'manager' && user.store_id !== req.session.user.store_id) {
+    if (req.session.user.role === 'manager' && user.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
     if (req.session.user.role === 'customer' && user._id.toString() !== req.session.user._id) {
