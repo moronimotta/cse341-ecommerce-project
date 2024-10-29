@@ -62,11 +62,16 @@ const createCart = async (req, res) => {
   
   try {
     const database = await mongodb.getDb();
+    const input = req.body;
 
     // Calculate the total price based in the cart items
     let total_price = 0;
-    req.body.items.forEach(item => {
-      if(!item.price || !item.quantity){
+    if (!Array.isArray(input.items)) {
+      throw new Error('Invalid items format');
+    }
+    
+    input.items.forEach(item => {
+      if (!item.price || !item.quantity) {
         throw new Error('Invalid item format');
       }
       total_price += item.price * item.quantity;
