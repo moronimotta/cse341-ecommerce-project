@@ -142,7 +142,7 @@ const deleteProd = async (req, res) => {
 
 // TODO: Jest test
 const getAllProductsByStoreId = async (req, res) => {
-  const store_id = req.params;
+  const store_id = req.params.id;
 
   try {
     const database = await mongodb.getDb();
