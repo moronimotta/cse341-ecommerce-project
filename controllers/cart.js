@@ -163,6 +163,7 @@ const updateCart = async (req, res) => {
 const deleteCart = async (req, res) => {
 
   try {
+    const database = await mongodb.getDb();
 
     const cart = await database.collection('carts').findOne({ _id: new ObjectId(req.params.cart_id) });
     if ((req.session.user.role === 'manager' || req.session.user.role === 'customer') && cart.store_id.toString() !== req.session.user.store_id) {
@@ -172,7 +173,6 @@ const deleteCart = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    const database = await mongodb.getDb();
     const result = await database.collection('carts').deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
