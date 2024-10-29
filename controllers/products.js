@@ -148,6 +148,13 @@ const getAllProductsByStoreId = async (req, res) => {
     const database = await mongodb.getDb();
     const response = await database.collection('products').find({ store_id: new ObjectId(store_id) }).toArray();
 
+    if(req.session.user.role === 'manager' && response.store_id.toString() !== req.session.user.store_id){
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+    if (req.session.user.role === 'customer' && response.store_id.toString() !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
     if (response.length > 0) {
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json(response);
