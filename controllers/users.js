@@ -67,8 +67,6 @@ const updateUser = async (req, res, next) => {
       if (!store) {
         return res.status(400).json({ message: 'Store not found' });
       }
-    }else {
-      return res.status(400).json({ message: 'Store not found' });
     }
 
 
