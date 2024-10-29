@@ -96,8 +96,7 @@ const createUser = async (req, res, next) => {
   const database = await mongodb.getDb();
   const collection = await database.collection('users');
   let user = req.body;
-
-  if (req.session.user !== undefined) {
+  if (req.session.user !== undefined && user.store_id !== undefined) {
     if (req.session.user.role !== 'admin') {
       if (req.session.user.store_id !== user.store_id) {
         return res.status(403).json({ message: 'Forbidden' });
@@ -106,60 +105,64 @@ const createUser = async (req, res, next) => {
   }
 
   try {
-    if (!user.github_id) {
-      if (user.store_id) {
-        const input = { params: { id: user.store_id, validation: true } };
 
-        const store = await storeController.getStore(input, res, next);
-        if (!store) {
-          return res.status(400).json({ message: 'Store not found' });
-        }
-      }
-
-      const newUser = new User(user);
-      await newUser.validate();
-    }
-
-    if (!user.role) {
+    if (user.github_id) {
       user.role = 'customer';
-    } else {
-      if ((user.role === 'manager' || user.role === 'admin') && (req.session.user.role !== 'admin' || req.session.user.role !== 'manager')) {
-        return res.status(403).json({ message: 'Forbidden' });
+      user.active = true;
+      user.api_key = uuidv4();
+      const response = await collection.insertOne(user);
+      const output = {
+        id: response.insertedId.toString(),
+        api_key: user.api_key
+      };
+  
+      if (response.acknowledged) {
+        if (user.github_id) {
+          return output;
+        }
+        return res.status(201).json({ message: 'User created successfully' });
+      } else {
+        throw new Error('An error occurred while creating the order');
       }
-      if (req.session.user.role === 'manager') {
-        if (user.role === 'admin') {
-          return res.status(403).json({ message: 'Forbidden' });
+    } else {
+      if (req.session.user !== undefined) {
+        if (req.session.user.role !== 'admin' && user.store_id !== undefined) {
+          user.store_id = req.session.user.store_id;
+        }
+      }else {
+        if (user.store_id === undefined) {
+          throw new Error('Store id is required');
         }
       }
-
-    }
-
-    if (user.api_key === undefined) {
-      user.api_key = uuidv4();
-    }
-
-    user.active = true;
-
-    const existingUser = await collection.findOne({ email: user.email, store_id: user.store_id });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email already exists for this store' });
-    }
-
-    const response = await collection.insertOne(user);
-    const output = {
-      id: response.insertedId.toString(),
-      api_key: user.api_key
-    };
-
-    if (response.acknowledged) {
-      if (user.github_id) {
-        return output;
+  
+      if (user.role === undefined) {
+        user.role = 'customer';
       }
-      return res.status(201).json({ message: 'User created successfully' });
-    } else {
-      throw new Error('An error occurred while creating the order');
+      if (user.role === 'admin'  && req.session.user.role !== 'admin') {
+        user.role = 'customer';
+      }
+      if (user.role === 'manager' && (req.session.user.role !== 'manager' || req.session.user.role !== 'admin')) {
+        user.role = 'customer';
+      }
+  
+      user.active = true;
+      user.api_key = uuidv4();
+      
+      const existingUser = await collection.findOne({ email: user.email, store_id: user.store_id });
+       if (existingUser) {
+         return res.status(400).json({ message: 'Email already exists for this store' });
+       }
+  
+        // create the user
+        const response = await collection.insertOne(user);
+        if(response.acknowledged) {
+          return res.status(201).json({ message: 'User created successfully' });
+        } else {
+          throw new Error('An error occurred while creating the order');
+        }
+  
     }
-
+   
   } catch (err) {
     sendNotification(err, 'system_error');
     if (!res.headersSent) {

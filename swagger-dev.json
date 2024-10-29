@@ -340,7 +340,14 @@
         "produces": [
           "application/json"
         ],
+
         "parameters": [
+          { 
+          "name": "Authorization",
+          "in": "header",
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        },
           {
             "name": "body",
             "in": "body",
