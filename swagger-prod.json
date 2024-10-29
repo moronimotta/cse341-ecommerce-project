@@ -63,6 +63,33 @@
     }
     
   ],
+  "tags": [
+    {
+      "name": "Login",
+      "description": "Operations related to user login"
+    },
+    {
+      "name": "Users",
+      "description": "Operations related to users"
+    },
+    {
+      "name": "Stores",
+      "description": "Operations related to stores"
+    },
+    {
+      "name": "Products",
+      "description": "Operations related to products"
+    },
+    {
+      "name": "Cart",
+      "description": "Operations related to shopping cart"
+    },
+    {
+      "name": "Orders",
+      "description": "Operations related to orders"
+    }
+    
+  ],
   "paths": {
     "/login": {
       "get": {
