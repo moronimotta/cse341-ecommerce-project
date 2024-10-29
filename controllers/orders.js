@@ -18,11 +18,8 @@ const getAllOrders = async (req, res) => {
 };
 // TODO: Jest test
 const getSingleOrder = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    res.status(400).json('Must be a valid Order ID to find a order');
-  }
   try {
-    const orderId = new ObjectId(req.params.id);
+    const orderId = new ObjectId(req.params.order_id);
     const database = await mongodb.getDb();
     const response = await database.collection('orders').findOne({ _id: orderId });
 
@@ -98,13 +95,10 @@ const createOrder = async (req, res) => {
 };
 
 const updateOrder = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    return res.status(400).json('Must be a valid Order ID to update an order');
-  }
 
   try {
 
-    const orderId = new ObjectId(req.params.id);
+    const orderId = new ObjectId(req.params.order_id);
     const database = await mongodb.getDb();
 
     const order = await database.collection('orders').findOne({ _id: orderId });
@@ -140,11 +134,8 @@ const updateOrder = async (req, res) => {
 };
 
 const deleteOrder = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    res.status(400).json('Must be a valid Order ID to delete an Order');
-  }
   try {
-    const orderId = new ObjectId(req.params.id);
+    const orderId = new ObjectId(req.params.order_id);
     const database = await mongodb.getDb();
 
     const order = await database.collection('orders').findOne({ _id: orderId });
@@ -173,7 +164,7 @@ const getAllOrdersByStoreId = async (req, res) => {
   try {
     const database = await mongodb.getDb();
 
-    if(req.params.id !== req.session.user.store_id) {
+    if(req.params.id !== req.session.user.store_id && req.session.user.role !== 'admin') {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
@@ -190,10 +181,18 @@ const getAllOrdersByStoreId = async (req, res) => {
 const getAllOrdersByUserId = async (req, res) => {
   try {
     const database = await mongodb.getDb();
-    if(req.params.id !== req.session.user.store_id) {
+    if(req.params.user_id !== req.session.user._id && req.session.user.role === 'customer') {
       return res.status(403).json({ message: 'Forbidden' });
     }
-    const response = await database.collection('orders').find({ user_id: req.params.id }).toArray();
+    const response = await database.collection('orders').find({ user_id: req.params.user_id }).toArray();
+
+    if (response.length === 0) {
+      return res.status(404).json({ message: 'No orders found for the specified user' });
+    }
+
+    if (req.session.user.role === 'manager' && response.store_id.toString() !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
 
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(response);
@@ -204,12 +203,8 @@ const getAllOrdersByUserId = async (req, res) => {
 }
 
 const payOrder = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    return res.status(400).json('Must be a valid Order ID to update payment status');
-  }
-
   try {
-    const orderId = new ObjectId(req.params.id);
+    const orderId = new ObjectId(req.params.order_id);
     const database = await mongodb.getDb();
 
     const order = await database.collection('orders').findOne({ _id: orderId });
@@ -245,12 +240,9 @@ const payOrder = async (req, res) => {
 };
 
 const refundOrder = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    return res.status(400).json('Must be a valid Order ID to refund an order');
-  }
-
+ 
   try {
-    const orderId = new ObjectId(req.params.id);
+    const orderId = new ObjectId(req.params.order_id);
     const database = await mongodb.getDb();
     const order = await database.collection('orders').findOne({ _id: orderId });
 

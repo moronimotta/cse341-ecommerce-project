@@ -36,7 +36,7 @@
       "description": "Operations related to orders"
     }
   ],
-"paths": {
+  "paths": {
     "/login": {
       "get": {
         "tags": [
@@ -1294,6 +1294,117 @@
           }
         }
       }
+    }, "/orders/pay/{id}": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "description": "Pay order",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Order ID"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "500": {
+          "description": "Internal Server Error"
+        }
+      }
     }
+  }, "/orders/refund/{id}": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "description": "Refund Order.",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Order ID"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "500": {
+          "description": "Internal Server Error"
+        }
+      }
+    }
+  }, "/orders/user/{id}": {
+    "get": {
+      "tags": [
+        "Products"
+      ],
+      "description": "Retrieve all orders by user ID.",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "User ID"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "500": {
+          "description": "Internal Server Error"
+        }
+      }
+    }
+  }
   }
 }
