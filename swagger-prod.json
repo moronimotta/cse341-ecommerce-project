@@ -64,12 +64,30 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "examples": {
-              "application/json": {
-                "token": "jwt-token"
-              }
-            }
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "tags": [
+          "Login"
+        ],
+        "description": "User logout",
+        "produces": [
+          "application/json"
+        ],
+      
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"
@@ -619,14 +637,8 @@
         ],
         "responses": {
           "201": {
-            "description": "Created",
-            "examples": {
-              "application/json": {
-                "acknowledged": true,
-                "insertedId": "60c72b2f4f1a4a3d2e75b9d3"
-              }
-            }
-          },
+            "description": "Created"
+             },
           "500": {
             "description": "Internal Server Error"
           }
@@ -1034,7 +1046,7 @@
     },"/cart/store/{store_id}": {
     "get": {
       "tags": [
-        "Products"
+        "Cart"
       ],
       "description": "Retrieve all carts for a specific store by store ID.",
       "produces": [
@@ -1391,4 +1403,4 @@
     }
   }
   }
-}
+ }

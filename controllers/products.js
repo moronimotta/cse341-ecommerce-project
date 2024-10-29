@@ -1,6 +1,6 @@
 const mongodb = require('../data/database.js');
 const sendNotification = require('../tools/ntfy');
-const ObjectId = require ('mongodb').ObjectId;
+const ObjectId = require('mongodb').ObjectId;
 const Product = require('../models/Products');
 const storeController = require('./stores');
 
@@ -24,56 +24,56 @@ const getSingleProd = async (req, res) => {
     const database = await mongodb.getDb();
     const response = await database.collection('products').findOne({ _id: new ObjectId(req.params.product_id) });
 
-    if ((req.session.user.role === 'manager'  || req.session.user.role === 'customer')  && response.store_id.toString() !== req.session.user.store_id) {
-      return res.status(403).json({ message: 'Forbidden' }); 
+    if ((req.session.user.role === 'manager' || req.session.user.role === 'customer') && response.store_id.toString() !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
     }
 
     if (response) {
       res.setHeader('Content-Type', 'application/json');
-      return res.status(200).json(response); 
+      return res.status(200).json(response);
     } else {
-      return res.status(404).json({ message: 'Product not found' }); 
+      return res.status(404).json({ message: 'Product not found' });
     }
   } catch (error) {
     sendNotification(error, 'system_error');
-    return res.status(400).json({ message: error.message || 'An unknown error occurred' }); 
+    return res.status(400).json({ message: error.message || 'An unknown error occurred' });
   }
 };
 
 
 //Create a new product
-const createProd = async (req,res)=>{
-    const product = req.body;
-    const database = await mongodb.getDb()
-    const collection = await database.collection('products')
-  
-    try {
-      
-      if(req.session.user.role !== 'admin' && product.store_id !== undefined){
-        product.store_id = req.session.user.store_id;
-      }else if (product.store_id === undefined){
-        product.store_id = req.session.user.store_id;
-      }
+const createProd = async (req, res) => {
+  const product = req.body;
+  const database = await mongodb.getDb()
+  const collection = await database.collection('products')
 
-      const newProduct = new Product(product);
-      await newProduct.validate();
+  try {
 
-      const response = await collection.insertOne(newProduct);
-
-      if (response.acknowledged) {
-        res.status(201).json({ message: 'Product created successfully' });
-      } else {
-        throw new Error('An error occurred while creating the product');
-      }
-    } catch (error) {
-      if (error.name === 'ValidationError') {
-        res.status(400).json({ error: error.message });
-      } else {
-        sendNotification(error, 'system_error');
-        res.status(500).json({ error: error.message || 'An unknown error occurred' });
-      }
+    if (req.session.user.role !== 'admin' && product.store_id !== undefined) {
+      product.store_id = req.session.user.store_id;
+    } else if (product.store_id === undefined) {
+      product.store_id = req.session.user.store_id;
     }
-  };
+
+    const newProduct = new Product(product);
+    await newProduct.validate();
+
+    const response = await collection.insertOne(newProduct);
+
+    if (response.acknowledged) {
+      res.status(201).json({ message: 'Product created successfully' });
+    } else {
+      throw new Error('An error occurred while creating the product');
+    }
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      res.status(400).json({ error: error.message });
+    } else {
+      sendNotification(error, 'system_error');
+      res.status(500).json({ error: error.message || 'An unknown error occurred' });
+    }
+  }
+};
 
 //Update a product
 const updateProd = async (req, res) => {
@@ -87,7 +87,7 @@ const updateProd = async (req, res) => {
 
   try {
     const productToUpdate = await collection.findOne({ _id: new ObjectId(req.params.product_id) });
-    
+
     if (req.session.user.role === 'manager' && productToUpdate.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
@@ -95,7 +95,7 @@ const updateProd = async (req, res) => {
     const response = await collection.updateOne({ _id: productId }, { $set: req.body });
 
     if (response.modifiedCount > 0) {
-      res.status(204).send(); 
+      res.status(204).send();
     } else if (response.matchedCount === 0) {
       res.status(404).json({ message: 'Product not found' });
     } else {
@@ -121,22 +121,22 @@ const deleteProd = async (req, res) => {
     const prodId = new ObjectId(req.params.product_id);
     const database = await mongodb.getDb();
     const collection = await database.collection('products');
-    
+
     const productToDelete = await collection.findOne({ _id: prodId });
     if (req.session.user.role === 'manager' && productToDelete.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
-    
+
     const response = await database.collection('products').deleteOne({ _id: prodId });
 
     if (response.deletedCount > 0) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'Product not found' }); 
+      res.status(404).json({ message: 'Product not found' });
     }
   } catch (error) {
     sendNotification(error, 'system_error');
-    res.status(500).json({ error: error.message || 'An unknown error occurred' }); 
+    res.status(500).json({ error: error.message || 'An unknown error occurred' });
   }
 };
 
@@ -147,11 +147,13 @@ const getAllProductsByStoreId = async (req, res) => {
   try {
     const database = await mongodb.getDb();
     const response = await database.collection('products').find({ store_id: new ObjectId(store_id) }).toArray();
-
-    if(req.session.user.role === 'manager' && response.store_id.toString() !== req.session.user.store_id){
+    if (response.length === 0) {
+      return res.status(404).json({ message: 'No products found for this store' });
+    }
+    if (req.session.user.role === 'manager' && response[0].store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
-    if (req.session.user.role === 'customer' && response.store_id.toString() !== req.session.user.store_id) {
+    if (req.session.user.role === 'customer' && response[0].store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
@@ -188,15 +190,15 @@ const getLowStock = async (req, res, next) => {
     const id = req.params.id;
 
     const db = mongodb.getDb();
-  
+
     const result = await db.collection('products').find({
       store_id: new ObjectId(id),
       stock: { $lt: 20 }
     }).toArray();
-    
+
     if (result.length > 0) {
       res.setHeader('Content-Type', 'application/json');
-      res.status(200).json(result); 
+      res.status(200).json(result);
     } else {
       res.status(404).json({ message: 'No products with low stock found' });
     }
@@ -205,16 +207,16 @@ const getLowStock = async (req, res, next) => {
     res.status(500).json({ message: err.message });
   }
 };
-  
-  
 
-  module.exports = {
-    getAllProd,
-    getSingleProd,
-    updateProd,
-    createProd,
-    deleteProd,
-    getAllProductsByStoreId,
-    getLowStock,
-    updateStock
-  }
+
+
+module.exports = {
+  getAllProd,
+  getSingleProd,
+  updateProd,
+  createProd,
+  deleteProd,
+  getAllProductsByStoreId,
+  getLowStock,
+  updateStock
+}

@@ -29,6 +29,10 @@ const getCartById = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
+    if(req.session.user.role === 'customer' && cart.user_id.toString() !== req.session.user._id){
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
 
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
@@ -45,6 +49,13 @@ const getCartsByStoreId = async (req, res) => {
   try {
     const database = await mongodb.getDb();
     const carts = await database.collection('carts').find({ store_id: req.params.store_id }).toArray();
+
+    if(req.session.user.role === 'manager' && req.params.store_id !== req.session.user.store_id){
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+    if(req.session.user.role === 'customer'){
+      return res.status(403).json({ message: 'Forbidden' });
+    }
 
     if (carts.length === 0) {
       return res.status(404).json({ message: 'No carts found the specified store' });
