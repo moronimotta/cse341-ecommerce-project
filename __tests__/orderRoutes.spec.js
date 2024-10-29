@@ -39,14 +39,42 @@ describe('Order API endpoints', ()=>{
                 res.status(200).send(`Order ID: ${req.params.order_id}`);
             })
 
-
-
             const response = await request(app).get(`/${orderID}`);
             
             expect(response.status).toBe(200);
             expect(response.text).toEqual(`Order ID: ${orderID}`)
             expect(orderController.getSingleOrder).toHaveBeenCalled();
             // expect(response.body).toEqual(order);
+        });
+    });
+
+    describe('GET /orders/store/:id', () => {
+        it('Should return all orders by STORE id', async ()=> {
+            
+            const storeID = '123456'
+            orderController.getAllOrdersByStoreId.mockImplementation ((req,res)=> {
+                res.status(200).send(`Order by StoreID: ${req.params.id}`);
+
+            });
+            const response = await request(app).get(`/store/${storeID}`);
+
+            expect(response.status).toBe(200);
+            expect(response.text).toEqual(`Order by StoreID: ${storeID}`);
+        })
+    })
+
+    describe('GET /orders/user/:id', () => {
+        it('Should return all orders by USER id', async ()=> {
+            
+            const userID = '123abc'
+            orderController.getAllOrdersByUserId.mockImplementation ((req,res)=> {
+                res.status(200).send(`Order by UserID: ${req.params.user_id}`);
+
+            });
+            const response = await request(app).get(`/user/${userID}`);
+
+            expect(response.status).toBe(200);
+            expect(response.text).toEqual(`Order by UserID: ${userID}`);
         })
     })
 })

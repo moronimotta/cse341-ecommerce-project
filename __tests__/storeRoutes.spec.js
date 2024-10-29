@@ -24,4 +24,17 @@ describe('Store API endpoints', () => {
             expect(storeController.getStore).toHaveBeenCalled();
         })
     })
+    describe('GET /store_id ', () => {
+        it('Should return a single Store', async () => {
+            const storeID = 'abc123';
+            storeController.getStore.mockImplementation((req,res)=> {
+                res.status(200).send(`Store ID: ${req.params.id}`);
+            })
+
+            const response = await request(app).get(`/${storeID}`);
+            expect(response.status).toBe(200);
+            expect(response.text).toEqual(`Store ID: ${storeID}`);
+            expect(storeController.getStore).toHaveBeenCalled();
+        })
+    })
 })
