@@ -137,7 +137,7 @@ const updateCart = async (req, res) => {
     }
 
     const response = await database.collection('carts').findOneAndUpdate(
-      { _id: new ObjectId(id) },
+      { _id: new ObjectId(req.params.cart_id) },
       { $set: req.body },
       { returnOriginal: false }
     );
