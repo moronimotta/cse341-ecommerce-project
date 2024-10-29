@@ -115,7 +115,7 @@ const createUser = async (req, res, next) => {
         id: response.insertedId.toString(),
         api_key: user.api_key
       };
-  
+
       if (response.acknowledged) {
         if (user.github_id) {
           return output;
@@ -129,40 +129,50 @@ const createUser = async (req, res, next) => {
         if (req.session.user.role !== 'admin' && user.store_id !== undefined) {
           user.store_id = req.session.user.store_id;
         }
-      }else {
+      } else {
         if (user.store_id === undefined) {
           throw new Error('Store id is required');
         }
       }
-  
+
       if (user.role === undefined) {
         user.role = 'customer';
       }
-      if (user.role === 'admin'  && req.session.user.role !== 'admin') {
+      if (user.role === 'admin' && req.session.user.role !== 'admin') {
         user.role = 'customer';
       }
       if (user.role === 'manager' && (req.session.user.role !== 'manager' || req.session.user.role !== 'admin')) {
         user.role = 'customer';
       }
-  
+
+
+      if (req.session.user.role !== 'admin' && user.store_id !== undefined) {
+        user.store_id = req.session.user.store_id;
+      }
+      if (user.store_id === undefined) {
+        user.store_id = req.session.user.store_id;
+      }
+
+
+
       user.active = true;
       user.api_key = uuidv4();
-      
+
       const existingUser = await collection.findOne({ email: user.email, store_id: user.store_id });
-       if (existingUser) {
-         return res.status(400).json({ message: 'Email already exists for this store' });
-       }
-  
-        // create the user
-        const response = await collection.insertOne(user);
-        if(response.acknowledged) {
-          return res.status(201).json({ message: 'User created successfully' });
-        } else {
-          throw new Error('An error occurred while creating the order');
-        }
-  
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email already exists for this store' });
+      }
+
+      // create the user
+      const response = await collection.insertOne(user);
+      if (response.acknowledged) {
+        return res.status(201).json({ message: 'User created successfully' });
+      } else {
+        throw new Error('An error occurred while creating the order');
+      }
+
     }
-   
+
   } catch (err) {
     sendNotification(err, 'system_error');
     if (!res.headersSent) {
