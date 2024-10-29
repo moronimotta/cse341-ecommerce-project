@@ -184,7 +184,7 @@ const deleteCart = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    const result = await database.collection('carts').deleteOne({ _id: new ObjectId(id) });
+    const result = await database.collection('carts').deleteOne({ _id: new ObjectId(req.params.cart_id) });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'Cart not found' });

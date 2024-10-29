@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.28% </span>
+                <span class="strong">12.06% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>14/114</span>
+                <span class='fraction'>14/116</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/64</span>
+                <span class='fraction'>0/66</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.28% </span>
+                <span class="strong">12.06% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>14/114</span>
+                <span class='fraction'>14/116</span>
             </div>
         
             
@@ -282,7 +282,9 @@
 <a name='L217'></a><a href='#L217'>217</a>
 <a name='L218'></a><a href='#L218'>218</a>
 <a name='L219'></a><a href='#L219'>219</a>
-<a name='L220'></a><a href='#L220'>220</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -428,6 +430,8 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -503,7 +507,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const mongodb = require('../data/database.js');
 const sendNotification = require('../tools/ntfy');
-const ObjectId = require ('mongodb').ObjectId;
+const ObjectId = require('mongodb').ObjectId;
 const Product = require('../models/Products');
 const storeController = require('./stores');
 &nbsp;
@@ -527,56 +531,56 @@ const getSingleProd = <span class="fstat-no" title="function not covered" >as</s
     const database = <span class="cstat-no" title="statement not covered" >await mongodb.getDb();</span>
     const response = <span class="cstat-no" title="statement not covered" >await database.collection('products').findOne({ _id: new ObjectId(req.params.product_id) });</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    if ((req.session.user.role === 'manager'  || req.session.user.role === 'customer')  &amp;&amp; response.store_id.toString() !== req.session.user.store_id) {</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(403).json({ message: 'Forbidden' }); </span>
+<span class="cstat-no" title="statement not covered" >    if ((req.session.user.role === 'manager' || req.session.user.role === 'customer') &amp;&amp; response.store_id.toString() !== req.session.user.store_id) {</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(403).json({ message: 'Forbidden' });</span>
     }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    if (response) {</span>
 <span class="cstat-no" title="statement not covered" >      res.setHeader('Content-Type', 'application/json');</span>
-<span class="cstat-no" title="statement not covered" >      return res.status(200).json(response); </span>
+<span class="cstat-no" title="statement not covered" >      return res.status(200).json(response);</span>
     } else {
-<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ message: 'Product not found' }); </span>
+<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ message: 'Product not found' });</span>
     }
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    sendNotification(error, 'system_error');</span>
-<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ message: error.message || 'An unknown error occurred' }); </span>
+<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ message: error.message || 'An unknown error occurred' });</span>
   }
 };
 &nbsp;
 &nbsp;
 //Create a new product
-const createProd = <span class="fstat-no" title="function not covered" >as</span>ync (req,res)=&gt;{
-    const product = <span class="cstat-no" title="statement not covered" >req.body;</span>
-    const database = <span class="cstat-no" title="statement not covered" >await mongodb.getDb()</span>
-    const collection = <span class="cstat-no" title="statement not covered" >await database.collection('products')</span>
-  
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      
-<span class="cstat-no" title="statement not covered" >      if(req.session.user.role !== 'admin' &amp;&amp; product.store_id !== undefined){</span>
-<span class="cstat-no" title="statement not covered" >        product.store_id = req.session.user.store_id;</span>
-      }else <span class="cstat-no" title="statement not covered" >if (product.store_id === undefined){</span>
-<span class="cstat-no" title="statement not covered" >        product.store_id = req.session.user.store_id;</span>
-      }
+const createProd = <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
+  const product = <span class="cstat-no" title="statement not covered" >req.body;</span>
+  const database = <span class="cstat-no" title="statement not covered" >await mongodb.getDb()</span>
+  const collection = <span class="cstat-no" title="statement not covered" >await database.collection('products')</span>
 &nbsp;
-      const newProduct = <span class="cstat-no" title="statement not covered" >new Product(product);</span>
-<span class="cstat-no" title="statement not covered" >      await newProduct.validate();</span>
+<span class="cstat-no" title="statement not covered" >  try {</span>
 &nbsp;
-      const response = <span class="cstat-no" title="statement not covered" >await collection.insertOne(newProduct);</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >      if (response.acknowledged) {</span>
-<span class="cstat-no" title="statement not covered" >        res.status(201).json({ message: 'Product created successfully' });</span>
-      } else {
-<span class="cstat-no" title="statement not covered" >        throw new Error('An error occurred while creating the product');</span>
-      }
-    } catch (error) {
-<span class="cstat-no" title="statement not covered" >      if (error.name === 'ValidationError') {</span>
-<span class="cstat-no" title="statement not covered" >        res.status(400).json({ error: error.message });</span>
-      } else {
-<span class="cstat-no" title="statement not covered" >        sendNotification(error, 'system_error');</span>
-<span class="cstat-no" title="statement not covered" >        res.status(500).json({ error: error.message || 'An unknown error occurred' });</span>
-      }
+<span class="cstat-no" title="statement not covered" >    if (req.session.user.role !== 'admin' &amp;&amp; product.store_id !== undefined) {</span>
+<span class="cstat-no" title="statement not covered" >      product.store_id = req.session.user.store_id;</span>
+    } else <span class="cstat-no" title="statement not covered" >if (product.store_id === undefined) {</span>
+<span class="cstat-no" title="statement not covered" >      product.store_id = req.session.user.store_id;</span>
     }
-  };
+&nbsp;
+    const newProduct = <span class="cstat-no" title="statement not covered" >new Product(product);</span>
+<span class="cstat-no" title="statement not covered" >    await newProduct.validate();</span>
+&nbsp;
+    const response = <span class="cstat-no" title="statement not covered" >await collection.insertOne(newProduct);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (response.acknowledged) {</span>
+<span class="cstat-no" title="statement not covered" >      res.status(201).json({ message: 'Product created successfully' });</span>
+    } else {
+<span class="cstat-no" title="statement not covered" >      throw new Error('An error occurred while creating the product');</span>
+    }
+  } catch (error) {
+<span class="cstat-no" title="statement not covered" >    if (error.name === 'ValidationError') {</span>
+<span class="cstat-no" title="statement not covered" >      res.status(400).json({ error: error.message });</span>
+    } else {
+<span class="cstat-no" title="statement not covered" >      sendNotification(error, 'system_error');</span>
+<span class="cstat-no" title="statement not covered" >      res.status(500).json({ error: error.message || 'An unknown error occurred' });</span>
+    }
+  }
+};
 &nbsp;
 //Update a product
 const updateProd = <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
@@ -590,7 +594,7 @@ const updateProd = <span class="fstat-no" title="function not covered" >as</span
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const productToUpdate = <span class="cstat-no" title="statement not covered" >await collection.findOne({ _id: new ObjectId(req.params.product_id) });</span>
-    
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    if (req.session.user.role === 'manager' &amp;&amp; productToUpdate.store_id.toString() !== req.session.user.store_id) {</span>
 <span class="cstat-no" title="statement not covered" >      return res.status(403).json({ message: 'Forbidden' });</span>
     }
@@ -598,7 +602,7 @@ const updateProd = <span class="fstat-no" title="function not covered" >as</span
     const response = <span class="cstat-no" title="statement not covered" >await collection.updateOne({ _id: productId }, { $set: req.body });</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    if (response.modifiedCount &gt; 0) {</span>
-<span class="cstat-no" title="statement not covered" >      res.status(204).send(); </span>
+<span class="cstat-no" title="statement not covered" >      res.status(204).send();</span>
     } else <span class="cstat-no" title="statement not covered" >if (response.matchedCount === 0) {</span>
 <span class="cstat-no" title="statement not covered" >      res.status(404).json({ message: 'Product not found' });</span>
     } else {
@@ -624,37 +628,39 @@ const deleteProd = <span class="fstat-no" title="function not covered" >as</span
     const prodId = <span class="cstat-no" title="statement not covered" >new ObjectId(req.params.product_id);</span>
     const database = <span class="cstat-no" title="statement not covered" >await mongodb.getDb();</span>
     const collection = <span class="cstat-no" title="statement not covered" >await database.collection('products');</span>
-    
+&nbsp;
     const productToDelete = <span class="cstat-no" title="statement not covered" >await collection.findOne({ _id: prodId });</span>
 <span class="cstat-no" title="statement not covered" >    if (req.session.user.role === 'manager' &amp;&amp; productToDelete.store_id.toString() !== req.session.user.store_id) {</span>
 <span class="cstat-no" title="statement not covered" >      return res.status(403).json({ message: 'Forbidden' });</span>
     }
-    
+&nbsp;
     const response = <span class="cstat-no" title="statement not covered" >await database.collection('products').deleteOne({ _id: prodId });</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    if (response.deletedCount &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >      res.status(204).send();</span>
     } else {
-<span class="cstat-no" title="statement not covered" >      res.status(404).json({ message: 'Product not found' }); </span>
+<span class="cstat-no" title="statement not covered" >      res.status(404).json({ message: 'Product not found' });</span>
     }
   } catch (error) {
 <span class="cstat-no" title="statement not covered" >    sendNotification(error, 'system_error');</span>
-<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: error.message || 'An unknown error occurred' }); </span>
+<span class="cstat-no" title="statement not covered" >    res.status(500).json({ error: error.message || 'An unknown error occurred' });</span>
   }
 };
 &nbsp;
 // TODO: Jest test
 const getAllProductsByStoreId = <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-  const store_id = <span class="cstat-no" title="statement not covered" >req.params;</span>
+  const store_id = <span class="cstat-no" title="statement not covered" >req.params.id;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  try {</span>
     const database = <span class="cstat-no" title="statement not covered" >await mongodb.getDb();</span>
     const response = <span class="cstat-no" title="statement not covered" >await database.collection('products').find({ store_id: new ObjectId(store_id) }).toArray();</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >    if(req.session.user.role === 'manager' &amp;&amp; response.store_id.toString() !== req.session.user.store_id){</span>
+<span class="cstat-no" title="statement not covered" >    if (response.length === 0) {</span>
+<span class="cstat-no" title="statement not covered" >      return res.status(404).json({ message: 'No products found for this store' });</span>
+    }
+<span class="cstat-no" title="statement not covered" >    if (req.session.user.role === 'manager' &amp;&amp; response[0].store_id.toString() !== req.session.user.store_id) {</span>
 <span class="cstat-no" title="statement not covered" >      return res.status(403).json({ message: 'Forbidden' });</span>
     }
-<span class="cstat-no" title="statement not covered" >    if (req.session.user.role === 'customer' &amp;&amp; response.store_id.toString() !== req.session.user.store_id) {</span>
+<span class="cstat-no" title="statement not covered" >    if (req.session.user.role === 'customer' &amp;&amp; response[0].store_id.toString() !== req.session.user.store_id) {</span>
 <span class="cstat-no" title="statement not covered" >      return res.status(403).json({ message: 'Forbidden' });</span>
     }
 &nbsp;
@@ -691,15 +697,15 @@ const getLowStock = <span class="fstat-no" title="function not covered" >as</spa
     const id = <span class="cstat-no" title="statement not covered" >req.params.id;</span>
 &nbsp;
     const db = <span class="cstat-no" title="statement not covered" >mongodb.getDb();</span>
-  
+&nbsp;
     const result = <span class="cstat-no" title="statement not covered" >await db.collection('products').find({</span>
       store_id: new ObjectId(id),
       stock: { $lt: 20 }
     }).toArray();
-    
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    if (result.length &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >      res.setHeader('Content-Type', 'application/json');</span>
-<span class="cstat-no" title="statement not covered" >      res.status(200).json(result); </span>
+<span class="cstat-no" title="statement not covered" >      res.status(200).json(result);</span>
     } else {
 <span class="cstat-no" title="statement not covered" >      res.status(404).json({ message: 'No products with low stock found' });</span>
     }
@@ -708,26 +714,26 @@ const getLowStock = <span class="fstat-no" title="function not covered" >as</spa
 <span class="cstat-no" title="statement not covered" >    res.status(500).json({ message: err.message });</span>
   }
 };
-  
-  
 &nbsp;
-  module.exports = {
-    getAllProd,
-    getSingleProd,
-    updateProd,
-    createProd,
-    deleteProd,
-    getAllProductsByStoreId,
-    getLowStock,
-    updateStock
-  }</pre></td></tr></table></pre>
+&nbsp;
+&nbsp;
+module.exports = {
+  getAllProd,
+  getSingleProd,
+  updateProd,
+  createProd,
+  deleteProd,
+  getAllProductsByStoreId,
+  getLowStock,
+  updateStock
+}</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-10-29T21:09:28.296Z
+                at 2024-10-29T21:50:24.856Z
             </div>
         <script src="../prettify.js"></script>
         <script>
