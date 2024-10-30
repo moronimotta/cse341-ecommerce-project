@@ -49,4 +49,36 @@ describe('Products API endpoints', ()=>{
             // expect(response.body).toEqual(prod1);
         })
     })
+    describe('GET /store/id', () => {
+        it('Shoud return all products by STORE id', async () => {
+             // const prod1 = {_id: "1", name: "Updated Product Name", stock: 150, description: "Updated Product Description", brand: "Updated Brand Name", price: 100, category: "Updated Category Name"};
+            const storeID = '123abc';
+            prodController.getAllProductsByStoreId.mockImplementation((req,res) => {
+                res.status(200).send(`All Products by Store ID: ${req.params.id}`);
+            })
+            // const response = await request(app).get('/products/1');
+            const response = await request(app).get(`/store/${storeID}`);
+                
+            expect(response.status).toBe(200);
+            expect(response.text).toBe(`All Products by Store ID: ${storeID}`);
+            expect(prodController.getAllProductsByStoreId).toHaveBeenCalled();
+            
+        })
+    })
+    describe('GET /store/low-stock/id', () => {
+        it('Shoud return products with low-Stock', async () => {
+             // const prod1 = {_id: "1", name: "Updated Product Name", stock: 150, description: "Updated Product Description", brand: "Updated Brand Name", price: 100, category: "Updated Category Name"};
+            const storeID = '123abc';
+            prodController.getLowStock.mockImplementation((req,res) => {
+                res.status(200).send(`Products with Low Stock: ${req.params.id}`);
+            })
+            // const response = await request(app).get('/products/1');
+            const response = await request(app).get(`/store/low-stock/${storeID}`);
+                
+            expect(response.status).toBe(200);
+            expect(response.text).toBe(`Products with Low Stock: ${storeID}`);
+            expect(prodController.getAllProductsByStoreId).toHaveBeenCalled();
+            
+        })
+    })
 })

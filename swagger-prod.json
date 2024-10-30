@@ -36,7 +36,61 @@
       "description": "Operations related to orders"
     }
   ],
- "paths": {
+"tags": [
+    {
+      "name": "Login",
+      "description": "Operations related to user login"
+    },
+    {
+      "name": "Users",
+      "description": "Operations related to users"
+    },
+    {
+      "name": "Stores",
+      "description": "Operations related to stores"
+    },
+    {
+      "name": "Products",
+      "description": "Operations related to products"
+    },
+    {
+      "name": "Cart",
+      "description": "Operations related to shopping cart"
+    },
+    {
+      "name": "Orders",
+      "description": "Operations related to orders"
+    }
+    
+  ],
+  "tags": [
+    {
+      "name": "Login",
+      "description": "Operations related to user login"
+    },
+    {
+      "name": "Users",
+      "description": "Operations related to users"
+    },
+    {
+      "name": "Stores",
+      "description": "Operations related to stores"
+    },
+    {
+      "name": "Products",
+      "description": "Operations related to products"
+    },
+    {
+      "name": "Cart",
+      "description": "Operations related to shopping cart"
+    },
+    {
+      "name": "Orders",
+      "description": "Operations related to orders"
+    }
+    
+  ],
+  "paths": {
     "/login": {
       "get": {
         "tags": [
@@ -64,12 +118,30 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "examples": {
-              "application/json": {
-                "token": "jwt-token"
-              }
-            }
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "tags": [
+          "Login"
+        ],
+        "description": "User logout",
+        "produces": [
+          "application/json"
+        ],
+      
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"
@@ -321,7 +393,14 @@
         "produces": [
           "application/json"
         ],
+
         "parameters": [
+          { 
+          "name": "Authorization",
+          "in": "header",
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        },
           {
             "name": "body",
             "in": "body",
@@ -619,14 +698,8 @@
         ],
         "responses": {
           "201": {
-            "description": "Created",
-            "examples": {
-              "application/json": {
-                "acknowledged": true,
-                "insertedId": "60c72b2f4f1a4a3d2e75b9d3"
-              }
-            }
-          },
+            "description": "Created"
+             },
           "500": {
             "description": "Internal Server Error"
           }
@@ -878,13 +951,16 @@
                       "quantity": {
                         "type": "integer",
                         "example": 1
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 15.00
                       }
                     }
                   }
                 }
               },
               "required": [
-                "user_id",
                 "items"
               ]
             }
@@ -949,6 +1025,40 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user_id": {
+                  "type": "string",
+                  "example": "User ID"
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "product_id": {
+                        "type": "string",
+                        "example": "Product ID"
+                      },
+                      "quantity": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 15.00
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -994,7 +1104,56 @@
           }
         }
       }
-    },
+    },"/cart/store/{store_id}": {
+    "get": {
+      "tags": [
+        "Cart"
+      ],
+      "description": "Retrieve all carts for a specific store by store ID.",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "name": "store_id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Store ID"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK",
+          "examples": {
+            "application/json": [
+              {
+                "_id": "60c72b2f4f1a4a3d2e75b9d3",
+                "name": "Product Name",
+                "stock": 50,
+                "description": "Product Description",
+                "brand": "Brand Name",
+                "category": "Category Name"
+              }
+            ]
+          }
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "500": {
+          "description": "Internal Server Error"
+        }
+      }
+    }
+  },
     "/orders/": {
       "get": {
         "tags": [
@@ -1032,29 +1191,13 @@
             "schema": {
               "type": "object",
               "properties": {
-                "user_id": {
-                  "type": "string",
-                  "example": "any"
-                },
-                "amount": {
-                  "type": "number",
-                  "example": 100.0
-                },
-                "status": {
-                  "type": "string",
-                  "example": "any"
-                },
-                "date": {
-                  "type": "string",
-                  "example": "any"
-                },
+      
                 "cart_id": {
                   "type": "string",
                   "example": "any"
                 }
               },
               "required": [
-                "amount",
                 "cart_id"
               ]
             }
@@ -1208,6 +1351,117 @@
           }
         }
       }
+    }, "/orders/pay/{id}": {
+    "post": {
+      "tags": [
+        "Orders"
+      ],
+      "description": "Pay order",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Order ID"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "500": {
+          "description": "Internal Server Error"
+        }
+      }
+    }
+  }, "/orders/refund/{id}": {
+    "post": {
+      "tags": [
+        "Orders"
+      ],
+      "description": "Refund Order.",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "Order ID"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "500": {
+          "description": "Internal Server Error"
+        }
+      }
+    }
+  }, "/orders/user/{id}": {
+    "get": {
+      "tags": [
+        "Orders"
+      ],
+      "description": "Retrieve all orders by user ID.",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string",
+          "description": "User ID"
+        },
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "type": "string",
+          "description": "'Bearer + API Key'"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OK"
+        },
+        "404": {
+          "description": "Not Found"
+        },
+        "500": {
+          "description": "Internal Server Error"
+        }
+      }
     }
   }
-}
+  }
+ }

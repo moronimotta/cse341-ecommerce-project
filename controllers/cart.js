@@ -29,6 +29,10 @@ const getCartById = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
+    if(req.session.user.role === 'customer' && cart.user_id.toString() !== req.session.user._id){
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
 
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
@@ -46,6 +50,13 @@ const getCartsByStoreId = async (req, res) => {
     const database = await mongodb.getDb();
     const carts = await database.collection('carts').find({ store_id: req.params.store_id }).toArray();
 
+    if(req.session.user.role === 'manager' && req.params.store_id !== req.session.user.store_id){
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+    if(req.session.user.role === 'customer'){
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
     if (carts.length === 0) {
       return res.status(404).json({ message: 'No carts found the specified store' });
     }
@@ -62,11 +73,16 @@ const createCart = async (req, res) => {
   
   try {
     const database = await mongodb.getDb();
+    const input = req.body;
 
     // Calculate the total price based in the cart items
     let total_price = 0;
-    req.body.items.forEach(item => {
-      if(!item.price || !item.quantity){
+    if (!Array.isArray(input.items)) {
+      throw new Error('Invalid items format');
+    }
+    
+    input.items.forEach(item => {
+      if (!item.price || !item.quantity) {
         throw new Error('Invalid item format');
       }
       total_price += item.price * item.quantity;
@@ -137,7 +153,7 @@ const updateCart = async (req, res) => {
     }
 
     const response = await database.collection('carts').findOneAndUpdate(
-      { _id: new ObjectId(id) },
+      { _id: new ObjectId(req.params.cart_id) },
       { $set: req.body },
       { returnOriginal: false }
     );
@@ -158,6 +174,7 @@ const updateCart = async (req, res) => {
 const deleteCart = async (req, res) => {
 
   try {
+    const database = await mongodb.getDb();
 
     const cart = await database.collection('carts').findOne({ _id: new ObjectId(req.params.cart_id) });
     if ((req.session.user.role === 'manager' || req.session.user.role === 'customer') && cart.store_id.toString() !== req.session.user.store_id) {
@@ -167,8 +184,7 @@ const deleteCart = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    const database = await mongodb.getDb();
-    const result = await database.collection('carts').deleteOne({ _id: new ObjectId(id) });
+    const result = await database.collection('carts').deleteOne({ _id: new ObjectId(req.params.cart_id) });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'Cart not found' });

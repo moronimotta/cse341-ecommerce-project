@@ -11,7 +11,17 @@ jest.mock('../controllers/cart');
 
 
 describe('Cart API endpoints', () => {
-    describe('GET / ', () => {
+    describe('GET /', () => {
+        it('Shoud return all Cart', async ()=> {
+            cartController.getAllCarts.mockImplementation((req,res)=> {
+                res.status(200).send('All Cart');
+            });
+            const response = await request(app).get('/');
+            expect(response.status).toBe(200);
+            expect(response.text).toEqual('All Cart');
+        })
+    })
+    describe('GET /cart:id ', () => {
         it('Should return a single Cart', async () => {
             const cartID = '12abc'
             cartController.getCartById.mockImplementation((req,res)=> {

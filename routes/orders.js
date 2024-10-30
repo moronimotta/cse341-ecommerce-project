@@ -13,10 +13,10 @@ router.delete('/:order_id', authorizationChecker('manager'), ordersController.de
 router.get('/store/:id', authorizationChecker('manager'), ordersController.getAllOrdersByStoreId);
 
 // Customer can see his orders.
-router.put('/refund/:id', authorizationChecker('customer'), ordersController.refundOrder)
-router.put('/pay/:id', authorizationChecker('customer'), ordersController.payOrder)
+router.post('/refund/:order_id', authorizationChecker('customer'), ordersController.refundOrder)
+router.post('/pay/:order_id', authorizationChecker('customer'), ordersController.payOrder)
 router.get('/:order_id', authorizationChecker('customer'), ordersController.getSingleOrder);
-router.get('/user/:id', authorizationChecker('customer'), ordersController.getAllOrdersByUserId);
+router.get('/user/:user_id', authorizationChecker('customer'), ordersController.getAllOrdersByUserId);
 
 
 module.exports = router;

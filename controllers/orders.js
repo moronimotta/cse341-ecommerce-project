@@ -18,13 +18,10 @@ const getAllOrders = async (req, res) => {
 };
 // TODO: Jest test
 const getSingleOrder = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    res.status(400).json('Must be a valid Order ID to find a order');
-  }
   try {
-    const orderId = new ObjectId(req.params.id);
+   
     const database = await mongodb.getDb();
-    const response = await database.collection('orders').findOne({ _id: orderId });
+    const response = await database.collection('orders').findOne({ _id: new ObjectId(req.params.order_id) });
 
     if (req.session.user.role === 'manager' && response.store_id.toString() !== req.session.user.store_id) {
       return res.status(403).json({ message: 'Forbidden' });
@@ -57,25 +54,32 @@ const createOrder = async (req, res) => {
       if (!store) {
         return res.status(400).json({ message: 'Store not found' });
       }
+    }else {
+      orderData.store_id = req.session.user.store_id;
     }
 
     // Check if cart_id exists
+    let cart = '';
     if (orderData.cart_id) {
-      const cart = await database.collection('carts').findOne({ _id: new ObjectId(orderData.cart_id) });
+      cart = await database.collection('carts').findOne({ _id: new ObjectId(orderData.cart_id) });
       if (!cart) {
         return res.status(400).json({ message: 'Cart not found' });
       }
     }
 
-    if (req.session.user.role === 'manager' && orderData.store_id.toString() !== req.session.user.store_id &&
-      cart.store_id.toString() !== req.session.user.store_id && cart.user_id.toString() !== req.session.user._id) {
+    if(req.session.user.role === 'manager' && cart.store_id.toString() !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    } 
+
+    // check if customer is the owner of the cart
+    if (req.session.user.role === 'customer' && cart.user_id.toString() !== req.session.user._id) {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    if (req.session.user.role === 'customer' && orderData.user_id.toString() !== req.session.user._id &&
-      cart.user_id.toString() !== req.session.user._id && cart.store_id.toString() !== req.session.user.store_id) {
-      return res.status(403).json({ message: 'Forbidden' });
-    }
+
+    orderData.user_id = cart.user_id;
+    orderData.amount = cart.total_price;
+    orderData.date = new Date();
 
     const newOrder = new Order(orderData);
     await newOrder.validate();
@@ -98,13 +102,10 @@ const createOrder = async (req, res) => {
 };
 
 const updateOrder = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    return res.status(400).json('Must be a valid Order ID to update an order');
-  }
 
   try {
 
-    const orderId = new ObjectId(req.params.id);
+    const orderId = new ObjectId(req.params.order_id);
     const database = await mongodb.getDb();
 
     const order = await database.collection('orders').findOne({ _id: orderId });
@@ -140,11 +141,8 @@ const updateOrder = async (req, res) => {
 };
 
 const deleteOrder = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    res.status(400).json('Must be a valid Order ID to delete an Order');
-  }
   try {
-    const orderId = new ObjectId(req.params.id);
+    const orderId = new ObjectId(req.params.order_id);
     const database = await mongodb.getDb();
 
     const order = await database.collection('orders').findOne({ _id: orderId });
@@ -173,7 +171,7 @@ const getAllOrdersByStoreId = async (req, res) => {
   try {
     const database = await mongodb.getDb();
 
-    if(req.params.id !== req.session.user.store_id) {
+    if(req.params.id !== req.session.user.store_id && req.session.user.role !== 'admin') {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
@@ -190,10 +188,18 @@ const getAllOrdersByStoreId = async (req, res) => {
 const getAllOrdersByUserId = async (req, res) => {
   try {
     const database = await mongodb.getDb();
-    if(req.params.id !== req.session.user.store_id) {
+    if(req.params.user_id !== req.session.user._id && req.session.user.role === 'customer') {
       return res.status(403).json({ message: 'Forbidden' });
     }
-    const response = await database.collection('orders').find({ user_id: req.params.id }).toArray();
+    const response = await database.collection('orders').find({ user_id: req.params.user_id }).toArray();
+
+    if (response.length === 0) {
+      return res.status(404).json({ message: 'No orders found for the specified user' });
+    }
+
+    if (req.session.user.role === 'manager' && response.store_id.toString() !== req.session.user.store_id) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
 
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(response);
@@ -204,12 +210,8 @@ const getAllOrdersByUserId = async (req, res) => {
 }
 
 const payOrder = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    return res.status(400).json('Must be a valid Order ID to update payment status');
-  }
-
   try {
-    const orderId = new ObjectId(req.params.id);
+    const orderId = new ObjectId(req.params.order_id);
     const database = await mongodb.getDb();
 
     const order = await database.collection('orders').findOne({ _id: orderId });
@@ -219,6 +221,11 @@ const payOrder = async (req, res) => {
     }
     if (req.session.user.role === 'customer' && order.user_id.toString() !== req.session.user._id) {
       return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    // if order has a negative amount, it means it has been refunded
+    if (order.amount < 0) {
+      return res.status(400).json({ message: 'Order has been refunded' });
     }
 
     const response = await database.collection('orders').updateOne({ _id: orderId }, { $set: { status: 'paid' } });
@@ -226,31 +233,28 @@ const payOrder = async (req, res) => {
     if (response.modifiedCount > 0) {
       res.status(200).json({ message: 'Order status updated to paid' });
     } else if (response.matchedCount === 0) {
-      res.status(404).json({ message: 'Order not found' });
+      return res.status(404).json({ message: 'Order not found' });
     } else {
-      throw new Error('Order is already paid');
+      return res.status(400).json({ message: 'Order is already paid' });
     }
 
-    const cart = await database.collection('carts').findOne({ _id: order.cart_id });
+    const cart = await database.collection('carts').findOne({ _id: new ObjectId(order.cart_id) });
 
     for (let item of cart.items) {
       await productController.updateStock(item.product_id, item.quantity, 'pay');
     }
 
-
   } catch (error) {
     sendNotification(error, 'system_error');
-    res.status(500).json({ error: error.message || 'An unknown error occurred' });
+    if (!res.headersSent) {  
+      res.status(500).json({ error: error.message || 'An unknown error occurred' });
+    }
   }
 };
 
 const refundOrder = async (req, res) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    return res.status(400).json('Must be a valid Order ID to refund an order');
-  }
-
   try {
-    const orderId = new ObjectId(req.params.id);
+    const orderId = new ObjectId(req.params.order_id);
     const database = await mongodb.getDb();
     const order = await database.collection('orders').findOne({ _id: orderId });
 
@@ -261,24 +265,27 @@ const refundOrder = async (req, res) => {
       return res.status(403).json({ message: 'Forbidden' });
     }
 
-    const response = await database.collection('orders').updateOne({ _id: orderId }, { $set: { status: 'refund', amount: 0 } });
+    const response = await database.collection('orders').updateOne({ _id: orderId }, { $set: { status: 'refund', amount: (order.amount * -1) } });
 
     if (response.modifiedCount > 0) {
-      res.status(200).json({ message: 'Order status refunded' });
+      const cart = await database.collection('carts').findOne({ _id: new ObjectId(order.cart_id) });
+
+      for (let item of cart.items) {
+        await productController.updateStock(item.product_id, item.quantity, 'refund');
+      }
+
+      return res.status(200).json({ message: 'Order status refunded' });
     } else {
-      res.status(500).json({ message: 'Failed to update order status to refund' });
-    }
-
-    const cart = await database.collection('carts').findOne({ _id: order.cart_id });
-
-    for (let item of cart.items) {
-      await productController.updateStock(item.product_id, item.quantity, 'refund');
+      return res.status(500).json({ message: 'Failed to update order status to refund' });
     }
 
   } catch (error) {
     sendNotification(error, 'system_error');
-    res.status(500).json({ error: error.message || 'An unknown error occurred' });
+    if (!res.headersSent) { 
+      return res.status(500).json({ error: error.message || 'An unknown error occurred' });
+    }
   }
 };
+
 
 module.exports = { getAllOrders, getSingleOrder, createOrder, updateOrder, deleteOrder, getAllOrdersByStoreId, getAllOrdersByUserId, payOrder, refundOrder };
