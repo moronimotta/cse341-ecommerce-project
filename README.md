@@ -45,25 +45,6 @@ GITHUB_CLIENT_URL
 5- Run the aplication
 npm start
 
-## Usage
-Homepage: Access the homepage at http://localhost:3000
-User Authentication: Register and log in to manage orders and view past purchases.
-Manager Dashboard: Managers can access a dashboard to manage products, view orders, and monitor inventory levels
-
-
-## API Endpoints
-POST /login - User login.
-POST /register - New user registration.
-
-
-## Products
-GET /products - Fetch all products.
-POST /products - Add a new product (Managers only).
-PUT /products/
-- Update a product.
-DELETE /products/
-- Delete a product.
-
 ## Dependencies
 "cors": 
 "dotenv": 
